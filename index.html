@@ -53,20 +53,13 @@ select,input{width:100%;border:1px solid #8bd8ff66;background:#071d31;color:#fff
 .modeBtn{border:1px solid #8bd8ff66;background:#08243d;color:#fff;border-radius:12px;padding:11px;font-weight:1000;cursor:pointer}
 .modeBtn.active{background:linear-gradient(#ffcf62,#f39d22);color:#201100}
 
-/* スプライトエリア: 左=Lvボタン列、右=宝石画像 */
+/* スプライトエリア: 画像のみ、Lvラベルはオーバーレイ */
 .spriteWrap{flex:1;overflow-y:auto;overflow-x:hidden;padding:8px 12px 16px}
-.spriteRow{display:flex;gap:8px;align-items:flex-start}
-/* 左列: Lvボタン */
-.lvCol{display:flex;flex-direction:column;flex-shrink:0;width:70px;gap:0}
-.lvBtn{border:0;border-radius:8px;color:#fff;font-size:12px;font-weight:1000;cursor:pointer;text-align:center;padding:0;display:flex;align-items:center;justify-content:center}
-.lvBtn.green{background:linear-gradient(#65d755,#2ba937)}
-.lvBtn.blue{background:linear-gradient(#75c9ff,#2d88cf)}
-.lvBtn.purple{background:linear-gradient(#b784ff,#7645c6)}
-.lvBtn.orange{background:linear-gradient(#ffc15a,#e7841e)}
-.lvBtn.red{background:linear-gradient(#ff7777,#d73342)}
-/* 右列: 宝石画像(スプライット) */
-.spriteInner{position:relative;flex:1;cursor:pointer;user-select:none}
+.spriteInner{position:relative;cursor:pointer;user-select:none}
 .spriteInner img{display:block;width:100%;height:auto}
+/* Lvラベルオーバーレイ */
+.lvOverlay{position:absolute;left:0;top:0;bottom:0;width:44px;display:flex;flex-direction:column;pointer-events:none}
+.lvLabel{flex:1;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:800;text-shadow:0 1px 3px #000,0 0 6px #000}
 /* ハイライト */
 .spriteHighlight{position:absolute;left:0;right:0;pointer-events:none;border-radius:4px}
 .spriteHighlight.cur{background:#4af07a33;border:2px solid #4af07aaa}
@@ -157,16 +150,12 @@ select,input{width:100%;border:1px solid #8bd8ff66;background:#071d31;color:#fff
       <button class="modeBtn" data-mode="target">目標レベル</button>
     </div>
     <div class="spriteWrap">
-      <div class="spriteRow">
-        <!-- 左: Lvボタン列 -->
-        <div class="lvCol" id="lvCol"></div>
-        <!-- 右: 宝石スプライット画像 -->
-        <div class="spriteInner" id="spriteInner">
-          <img id="spriteImg" src="" alt="">
-          <div class="spriteHighlight cur" id="hlCur" style="display:none"></div>
-          <div class="spriteHighlight tgt" id="hlTgt" style="display:none"></div>
-          <div class="spriteHover" id="hlHover" style="display:none"></div>
-        </div>
+      <div class="spriteInner" id="spriteInner">
+        <img id="spriteImg" src="" alt="">
+        <div class="lvOverlay" id="lvOverlay"></div>
+        <div class="spriteHighlight cur" id="hlCur" style="display:none"></div>
+        <div class="spriteHighlight tgt" id="hlTgt" style="display:none"></div>
+        <div class="spriteHover" id="hlHover" style="display:none"></div>
       </div>
     </div>
   </div>
@@ -235,7 +224,7 @@ const spriteInner=document.getElementById("spriteInner");
 const hlCur=document.getElementById("hlCur");
 const hlTgt=document.getElementById("hlTgt");
 const hlHover=document.getElementById("hlHover");
-const lvCol=document.getElementById("lvCol");
+const lvOverlay=document.getElementById("lvOverlay");
 
 function getRowH(){return spriteImg.offsetHeight/ROWS}
 function lvToY(lv){const h=getRowH();return{top:(lv-1)*h,h}}
@@ -251,24 +240,22 @@ function updateHighlights(){
   else hlCur.style.display="none";
   if(tgtLv>0){const {top,h}=lvToY(tgtLv);hlTgt.style.cssText=`display:block;top:${top}px;height:${h}px`}
   else hlTgt.style.display="none";
-  // Lvボタン列を画像に合わせて生成
-  lvCol.innerHTML="";
+  // Lvラベルオーバーレイ生成
+  lvOverlay.innerHTML="";
   for(let lv=1;lv<=ROWS;lv++){
-    const btn=document.createElement("button");
-    btn.className="lvBtn "+lvColor(lv);
-    btn.style.height=rh+"px";
-    btn.textContent="Lv"+lv;
-    btn.onclick=(()=>{const l=lv;return()=>openSetPop(l)})();
-    lvCol.appendChild(btn);
+    const el=document.createElement("div");
+    el.className="lvLabel";
+    el.style.height=rh+"px";
+    el.textContent="Lv"+lv;
+    lvOverlay.appendChild(el);
   }
 }
 
 function openGem(gem){
-  activeGem=gem;
-  activeMode="current";
+  activeGem=gem;activeMode="current";
   document.getElementById("modalTitle").textContent=GEM_INFO[gem].name+" の設定";
   document.querySelectorAll(".modeBtn").forEach(b=>b.classList.toggle("active",b.dataset.mode==="current"));
-  lvCol.innerHTML="";
+  lvOverlay.innerHTML="";
   hlCur.style.display="none";hlTgt.style.display="none";hlHover.style.display="none";
   spriteImg.src=GEM_INFO[gem].img;
   document.getElementById("modalOverlay").classList.add("show");
@@ -276,7 +263,6 @@ function openGem(gem){
   else spriteImg.onload=()=>updateHighlights();
 }
 
-// 右の宝石画像タップ → 個数選択
 spriteInner.addEventListener("pointermove",e=>{
   if(!spriteImg.offsetHeight)return;
   const rect=spriteImg.getBoundingClientRect();
@@ -291,23 +277,7 @@ spriteInner.addEventListener("pointerup",e=>{
   openCountPop(yToLv(e.clientY-rect.top));
 });
 
-// 左のLvボタンタップ → set選択
-function openSetPop(lv){
-  pending={gem:activeGem,mode:activeMode,lv};
-  document.getElementById("popTitle").textContent=`Lv${lv}（${activeMode==="current"?"現在":"目標"}）を一括設定`;
-  const grid=document.getElementById("popGrid");
-  grid.innerHTML="";
-  [{label:"3set",qty:3},{label:"6set",qty:6}].forEach(({label,qty})=>{
-    const b=document.createElement("button");
-    b.className=state[activeGem][activeMode][lv]===qty?"popBtn main":"popBtn";
-    b.textContent=label;
-    b.onclick=()=>applyPop(qty);
-    grid.appendChild(b);
-  });
-  document.getElementById("pop").classList.add("show");
-}
-
-// 右の宝石タップ → 個数選択
+// 画像タップ → 個数選択
 function openCountPop(lv){
   pending={gem:activeGem,mode:activeMode,lv};
   document.getElementById("popTitle").textContent=`Lv${lv}（${activeMode==="current"?"現在":"目標"}）の個数`;
