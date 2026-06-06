@@ -25,11 +25,9 @@ select,input{width:100%;border:1px solid #8bd8ff66;background:#071d31;color:#fff
 /* ステージ */
 .stage{position:relative;border-radius:22px;overflow:hidden;aspect-ratio:1403/1121;background:#0c2f4d;box-shadow:0 10px 28px #0009;border:1px solid #7bd3ff33;margin-top:10px}
 .stageImg{position:absolute;inset:0;background-image:url('gem_bg.webp');background-size:cover;background-position:center}
-.gemHot{position:absolute;width:10%;aspect-ratio:1;border:0;padding:0;background:transparent;transform:translate(-50%,-50%);cursor:pointer;z-index:10;overflow:hidden}
-/* スプライット切り出し: 画像317x2532, 16コマ → 1コマ=317x158.25 */
-/* iconWrapで overflow:hidden + 固定サイズ、imgを translateY でコマ合わせ */
-.gemIcon{position:absolute;inset:0;overflow:hidden;pointer-events:none}
-.gemIcon img{position:absolute;left:0;top:0;width:100%;/* heightはJSで設定 */pointer-events:none;filter:drop-shadow(0 3px 5px #0008)}
+.gemHot{position:absolute;width:10%;aspect-ratio:1;border:0;padding:0;background:transparent;transform:translate(-50%,-50%);cursor:pointer;z-index:10;background-repeat:no-repeat}
+.gemIcon{display:none}
+.gemIcon img{display:none}
 .badge{position:absolute;right:-8px;top:-5px;min-width:28px;height:22px;display:grid;place-items:center;padding:0 4px;background:linear-gradient(#ff6d78,#d82337);border:2px solid #fff;border-radius:999px;color:#fff;font-size:11px;line-height:1;pointer-events:none;z-index:2}
 .gemHot[data-type="shield"]{left:50%;top:28%}
 .gemHot[data-type="lancer"]{left:35%;top:62%}
@@ -211,21 +209,23 @@ function buildPairs(gem){
 function calcOne(from,to){let plan=0,book=0,secret=0;for(let lv=from;lv<to;lv++){const r=GEM_COSTS[lv]||{};plan+=r.plan||0;book+=r.book||0;secret+=r.secret||0}return{plan,book,secret}}
 function calcAll(){const need={plan:0,book:0,secret:0};for(const gem of Object.keys(state))for(const p of buildPairs(gem)){const c=calcOne(p.from,p.to);need.plan+=c.plan;need.book+=c.book;need.secret+=c.secret}return need}
 
-// ステージアイコン: imgタグをtranslateYで動かしてコマ切り出し
-// 画像全体高さ = imgW * (2532/317), 1コマ = /16
-// コンテナ高さ = imgW * (2532/317) / 16 = imgW * 0.4991
-// translateY = -(lv-1) * コンテナ高さ
+// ステージアイコン: ボタン自体にbackground-imageでスプライット切り出し
+// 画像 317x2532(16コマ) → 1コマ = 317x158.25
+// ボタンサイズ = W x W (正方形)
+// 1コマは横長でないため、横幅に合わせてscale: scaleX = W/317, scaleY = W/317
+// → background-size = W px, W*(2532/317) px
+// → background-position-y = (lv-1) * W px (ただし各コマ高さ=W*(158.25/317)=W*0.4991)
 function updateStageIcon(gem){
-  const img=document.getElementById("icon-"+gem);
+  const btn=document.querySelector(`.gemHot[data-type="${gem}"]`);
+  const W=btn.offsetWidth;
+  if(!W)return;
+  const totalH=W*(2532/317);
+  const frameH=totalH/16;
   const curLv=state[gem].current.findIndex((v,i)=>i>0&&v>0);
-  const lv=Math.max(1,curLv>0?curLv:1);
-  const containerH=img.parentElement.offsetHeight||img.parentElement.getBoundingClientRect().height;
-  // imgの表示幅から全体高さ計算
-  const imgW=img.offsetWidth||img.parentElement.offsetWidth;
-  const totalH=imgW*(2532/317);
-  const rowH=totalH/SPRITE_ROWS;
-  img.style.height=totalH+"px";
-  img.style.top=(-( lv-1)*rowH)+"px";
+  const lv=curLv>0?curLv:1;
+  btn.style.backgroundImage=`url('${GEM_INFO[gem].img}')`;
+  btn.style.backgroundSize=`${W}px ${totalH}px`;
+  btn.style.backgroundPosition=`center ${-(lv-1)*frameH}px`;
 }
 
 function render(){
