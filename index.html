@@ -193,9 +193,57 @@ img.gem-card {
   transform: translate(-50%, -50%) !important;
 }
 
+
+/* ===== 座標確認デバッグ表示 ===== */
+.debugPanel{
+  position:fixed;
+  left:8px;
+  bottom:8px;
+  z-index:99999;
+  background:rgba(0,0,0,.82);
+  color:#fff;
+  border:1px solid rgba(120,212,255,.65);
+  border-radius:10px;
+  padding:8px 10px;
+  font-size:11px;
+  line-height:1.45;
+  font-weight:800;
+  pointer-events:none;
+  box-shadow:0 4px 14px rgba(0,0,0,.55);
+  max-width:250px;
+}
+.debugPanel b{color:#ffd45a}
+.debugCross{
+  position:absolute;
+  z-index:50;
+  width:18px;
+  height:18px;
+  pointer-events:none;
+  transform:translate(-50%,-50%);
+}
+.debugCross::before,.debugCross::after{content:"";position:absolute;box-shadow:0 0 4px #fff;}
+.debugCross::before{left:8px;top:0;width:2px;height:18px;}
+.debugCross::after{left:0;top:8px;width:18px;height:2px;}
+.debugCross.ring::before,.debugCross.ring::after{background:#ffe45c;}
+.debugCross.shield::before,.debugCross.shield::after{background:#27ff6d;}
+.debugCross.lancer::before,.debugCross.lancer::after{background:#38a3ff;}
+.debugCross.marks::before,.debugCross.marks::after{background:#ff9b22;}
+
 </style>
 </head>
 <body>
+
+<div id="debugPanel" class="debugPanel">
+  <b>座標確認</b><br>
+  Mouse: <span id="dbgMouse">-</span><br>
+  Stage: <span id="dbgStage">-</span><br>
+  Ring: <span id="dbgRing">未検出</span><br>
+  盾: <span id="dbgShield">-</span><br>
+  槍: <span id="dbgLancer">-</span><br>
+  弓: <span id="dbgMarks">-</span><br>
+  <small>※Stage内の%座標 / 画面px</small>
+</div>
+
 <div class="app">
   <div class="header">
     <div class="title">宝石LvUP Planner</div>
@@ -466,5 +514,50 @@ document.getElementById('applyBulk').onclick=applyBulk;
 ['havePlan','haveBook','haveSecret'].forEach(id=>document.getElementById(id).addEventListener('input',render));
 makeOptions(); render();
 </script>
+
+<script>
+(function(){
+  let lastMouse = {x:0,y:0};
+  document.addEventListener("mousemove", function(e){ lastMouse = {x:e.clientX, y:e.clientY}; }, {passive:true});
+  function text(id, value){ const el = document.getElementById(id); if(el) el.textContent = value; }
+  function centerInfo(el, stage){
+    if(!el || !stage) return null;
+    const r = el.getBoundingClientRect();
+    const s = stage.getBoundingClientRect();
+    const cx = r.left + r.width / 2;
+    const cy = r.top + r.height / 2;
+    return { pxX: Math.round(cx), pxY: Math.round(cy), pctX: ((cx-s.left)/s.width*100), pctY: ((cy-s.top)/s.height*100) };
+  }
+  function fmt(info){ return info ? `${info.pctX.toFixed(1)}%, ${info.pctY.toFixed(1)}% / ${info.pxX},${info.pxY}` : "未検出"; }
+  function ensureCross(name, cls){
+    const stage = document.getElementById("stage") || document.querySelector(".stage");
+    if(!stage) return null;
+    let el = document.getElementById("debugCross-"+name);
+    if(!el){ el = document.createElement("div"); el.id="debugCross-"+name; el.className="debugCross "+cls; stage.appendChild(el); }
+    return el;
+  }
+  function moveCross(name, cls, info){ const c=ensureCross(name,cls); if(c&&info){ c.style.left=info.pctX+"%"; c.style.top=info.pctY+"%"; } }
+  function findRing(){
+    return document.querySelector('.gemRing,.ring,.circle,.stageRing,#gemRing,#ring,.gemCircle,.centerRing') || null;
+  }
+  function update(){
+    const stage = document.getElementById("stage") || document.querySelector(".stage");
+    if(!stage) return;
+    const sr = stage.getBoundingClientRect();
+    text("dbgMouse", `${(((lastMouse.x-sr.left)/sr.width)*100).toFixed(1)}%, ${(((lastMouse.y-sr.top)/sr.height)*100).toFixed(1)}%`);
+    text("dbgStage", `${Math.round(sr.width)}×${Math.round(sr.height)}`);
+    const shield = document.querySelector('.gemHot[data-type="shield"], .gem-shield, #shieldGem, [data-gem="shield"]');
+    const lancer = document.querySelector('.gemHot[data-type="lancer"], .gem-lancer, .gem-spear, #lancerGem, #spearGem, [data-gem="lancer"], [data-gem="spear"]');
+    const marks = document.querySelector('.gemHot[data-type="marks"], .gem-marks, .gem-bow, #marksGem, #bowGem, [data-gem="marks"], [data-gem="bow"]');
+    const ring = findRing();
+    const si=centerInfo(shield,stage), li=centerInfo(lancer,stage), mi=centerInfo(marks,stage), ri=centerInfo(ring,stage);
+    text("dbgShield", fmt(si)); text("dbgLancer", fmt(li)); text("dbgMarks", fmt(mi)); text("dbgRing", fmt(ri));
+    moveCross("shield","shield",si); moveCross("lancer","lancer",li); moveCross("marks","marks",mi); if(ri) moveCross("ring","ring",ri);
+  }
+  window.addEventListener("resize", update);
+  setInterval(update, 120);
+})();
+</script>
+
 </body>
 </html>
