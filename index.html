@@ -194,40 +194,33 @@ img.gem-card {
 }
 
 
-/* ===== 座標確認デバッグ表示 ===== */
-.debugPanel{
-  position:fixed;
-  left:8px;
-  bottom:8px;
-  z-index:99999;
-  background:rgba(0,0,0,.82);
-  color:#fff;
-  border:1px solid rgba(120,212,255,.65);
-  border-radius:10px;
-  padding:8px 10px;
-  font-size:11px;
-  line-height:1.45;
-  font-weight:800;
-  pointer-events:none;
-  box-shadow:0 4px 14px rgba(0,0,0,.55);
-  max-width:250px;
-}
-.debugPanel b{color:#ffd45a}
+/* ===== デバッグ補正：クリック判定枠ではなく画像中心を見やすくする ===== */
 .debugCross{
   position:absolute;
-  z-index:50;
+  z-index:9999;
   width:18px;
   height:18px;
   pointer-events:none;
   transform:translate(-50%,-50%);
 }
-.debugCross::before,.debugCross::after{content:"";position:absolute;box-shadow:0 0 4px #fff;}
+.debugCross::before,
+.debugCross::after{
+  content:"";
+  position:absolute;
+  background:#ff2b55;
+  box-shadow:0 0 4px #fff;
+}
 .debugCross::before{left:8px;top:0;width:2px;height:18px;}
 .debugCross::after{left:0;top:8px;width:18px;height:2px;}
-.debugCross.ring::before,.debugCross.ring::after{background:#ffe45c;}
-.debugCross.shield::before,.debugCross.shield::after{background:#27ff6d;}
+.debugCross.shield::before,.debugCross.shield::after{background:#22ff66;}
 .debugCross.lancer::before,.debugCross.lancer::after{background:#38a3ff;}
 .debugCross.marks::before,.debugCross.marks::after{background:#ff9b22;}
+.debugCross.ring::before,.debugCross.ring::after{background:#ffe45c;}
+
+/* ボタン判定エリアを画像に近づける */
+.gemHot{
+  width:10% !important;
+}
 
 </style>
 </head>
@@ -237,11 +230,10 @@ img.gem-card {
   <b>座標確認</b><br>
   Mouse: <span id="dbgMouse">-</span><br>
   Stage: <span id="dbgStage">-</span><br>
-  Ring: <span id="dbgRing">未検出</span><br>
+  Ring: <span id="dbgRing">-</span><br>
   盾: <span id="dbgShield">-</span><br>
   槍: <span id="dbgLancer">-</span><br>
-  弓: <span id="dbgMarks">-</span><br>
-  <small>※Stage内の%座標 / 画面px</small>
+  弓: <span id="dbgMarks">-</span>
 </div>
 
 <div class="app">
@@ -516,46 +508,127 @@ makeOptions(); render();
 </script>
 
 <script>
+/* ===== 座標確認 修正版：button全体ではなく宝石画像の見た目中心を取得 ===== */
 (function(){
-  let lastMouse = {x:0,y:0};
-  document.addEventListener("mousemove", function(e){ lastMouse = {x:e.clientX, y:e.clientY}; }, {passive:true});
-  function text(id, value){ const el = document.getElementById(id); if(el) el.textContent = value; }
-  function centerInfo(el, stage){
-    if(!el || !stage) return null;
+  function q(sel){ return document.querySelector(sel); }
+  function setText(id, value){
+    const el=document.getElementById(id);
+    if(el) el.textContent=value;
+  }
+  function stageEl(){ return document.getElementById("stage") || q(".stage"); }
+
+  function getVisualRect(el){
+    if(!el) return null;
+
+    // 画像がある場合は画像を優先
+    const img = el.matches("img") ? el : el.querySelector("img");
+    if(img){
+      const r = img.getBoundingClientRect();
+      if(r.width && r.height) return r;
+    }
+
+    // 背景画像だけのbuttonの場合、buttonは判定枠が広いので
+    // 幅の中心はそのまま使い、実寸を10%幅に寄せる
     const r = el.getBoundingClientRect();
-    const s = stage.getBoundingClientRect();
-    const cx = r.left + r.width / 2;
-    const cy = r.top + r.height / 2;
-    return { pxX: Math.round(cx), pxY: Math.round(cy), pctX: ((cx-s.left)/s.width*100), pctY: ((cy-s.top)/s.height*100) };
+    if(!r.width || !r.height) return r;
+    const shrink = 0.62; // 16%判定を見た目寄りに補正
+    const w = r.width * shrink;
+    const h = r.height * shrink;
+    const cx = r.left + r.width/2;
+    const cy = r.top + r.height/2;
+    return {
+      left: cx - w/2,
+      top: cy - h/2,
+      width: w,
+      height: h,
+      right: cx + w/2,
+      bottom: cy + h/2
+    };
   }
-  function fmt(info){ return info ? `${info.pctX.toFixed(1)}%, ${info.pctY.toFixed(1)}% / ${info.pxX},${info.pxY}` : "未検出"; }
-  function ensureCross(name, cls){
-    const stage = document.getElementById("stage") || document.querySelector(".stage");
-    if(!stage) return null;
-    let el = document.getElementById("debugCross-"+name);
-    if(!el){ el = document.createElement("div"); el.id="debugCross-"+name; el.className="debugCross "+cls; stage.appendChild(el); }
-    return el;
+
+  function info(el, stage){
+    const r=getVisualRect(el);
+    if(!r || !stage) return null;
+    const s=stage.getBoundingClientRect();
+    const cx=r.left+r.width/2;
+    const cy=r.top+r.height/2;
+    return {
+      pctX:(cx-s.left)/s.width*100,
+      pctY:(cy-s.top)/s.height*100,
+      pxX:Math.round(cx),
+      pxY:Math.round(cy),
+      w:Math.round(r.width),
+      h:Math.round(r.height)
+    };
   }
-  function moveCross(name, cls, info){ const c=ensureCross(name,cls); if(c&&info){ c.style.left=info.pctX+"%"; c.style.top=info.pctY+"%"; } }
-  function findRing(){
-    return document.querySelector('.gemRing,.ring,.circle,.stageRing,#gemRing,#ring,.gemCircle,.centerRing') || null;
+  function fmt(v){
+    if(!v) return "未検出";
+    return `${v.pctX.toFixed(1)}%, ${v.pctY.toFixed(1)} / ${v.pxX},${v.pxY}`;
   }
-  function update(){
-    const stage = document.getElementById("stage") || document.querySelector(".stage");
+  function cross(name, cls, v){
+    const stage=stageEl();
+    if(!stage || !v) return;
+    let el=document.getElementById("debugCross-"+name);
+    if(!el){
+      el=document.createElement("div");
+      el.id="debugCross-"+name;
+      el.className="debugCross "+cls;
+      stage.appendChild(el);
+    }
+    el.style.left=v.pctX+"%";
+    el.style.top=v.pctY+"%";
+  }
+
+  let mouse={x:0,y:0};
+  document.addEventListener("mousemove",e=>{mouse={x:e.clientX,y:e.clientY};},{passive:true});
+
+  function ringInfo(stage){
+    // ring用の実要素がある場合
+    const ring=q(".gemRing,.stageRing,.ring,#gemRing,#stageRing");
+    if(ring) return info(ring,stage);
+
+    // 実要素が無い場合は、Stage内の光輪中心を推定。
+    // 現在の見た目に合わせて、中央リングの中心をここで表示する。
+    return {
+      pctX:50.0,
+      pctY:50.0,
+      pxX:Math.round(stage.getBoundingClientRect().left + stage.getBoundingClientRect().width*0.5),
+      pxY:Math.round(stage.getBoundingClientRect().top + stage.getBoundingClientRect().height*0.5),
+      w:0,h:0
+    };
+  }
+
+  function updateFixedDebug(){
+    const stage=stageEl();
     if(!stage) return;
-    const sr = stage.getBoundingClientRect();
-    text("dbgMouse", `${(((lastMouse.x-sr.left)/sr.width)*100).toFixed(1)}%, ${(((lastMouse.y-sr.top)/sr.height)*100).toFixed(1)}%`);
-    text("dbgStage", `${Math.round(sr.width)}×${Math.round(sr.height)}`);
-    const shield = document.querySelector('.gemHot[data-type="shield"], .gem-shield, #shieldGem, [data-gem="shield"]');
-    const lancer = document.querySelector('.gemHot[data-type="lancer"], .gem-lancer, .gem-spear, #lancerGem, #spearGem, [data-gem="lancer"], [data-gem="spear"]');
-    const marks = document.querySelector('.gemHot[data-type="marks"], .gem-marks, .gem-bow, #marksGem, #bowGem, [data-gem="marks"], [data-gem="bow"]');
-    const ring = findRing();
-    const si=centerInfo(shield,stage), li=centerInfo(lancer,stage), mi=centerInfo(marks,stage), ri=centerInfo(ring,stage);
-    text("dbgShield", fmt(si)); text("dbgLancer", fmt(li)); text("dbgMarks", fmt(mi)); text("dbgRing", fmt(ri));
-    moveCross("shield","shield",si); moveCross("lancer","lancer",li); moveCross("marks","marks",mi); if(ri) moveCross("ring","ring",ri);
+    const sr=stage.getBoundingClientRect();
+    const mx=(mouse.x-sr.left)/sr.width*100;
+    const my=(mouse.y-sr.top)/sr.height*100;
+
+    const shield=q('.gemHot[data-type="shield"], .gem-shield, #shieldGem, [data-gem="shield"]');
+    const lancer=q('.gemHot[data-type="lancer"], .gem-lancer, .gem-spear, #lancerGem, #spearGem, [data-gem="lancer"], [data-gem="spear"]');
+    const marks=q('.gemHot[data-type="marks"], .gem-marks, .gem-bow, #marksGem, #bowGem, [data-gem="marks"], [data-gem="bow"]');
+
+    const si=info(shield,stage);
+    const li=info(lancer,stage);
+    const mi=info(marks,stage);
+    const ri=ringInfo(stage);
+
+    setText("dbgMouse", `${mx.toFixed(1)}%, ${my.toFixed(1)}%`);
+    setText("dbgStage", `${Math.round(sr.width)}×${Math.round(sr.height)}`);
+    setText("dbgShield", fmt(si));
+    setText("dbgLancer", fmt(li));
+    setText("dbgMarks", fmt(mi));
+    setText("dbgRing", fmt(ri));
+
+    cross("shield","shield",si);
+    cross("lancer","lancer",li);
+    cross("marks","marks",mi);
+    cross("ring","ring",ri);
   }
-  window.addEventListener("resize", update);
-  setInterval(update, 120);
+
+  setInterval(updateFixedDebug,120);
+  window.addEventListener("resize",updateFixedDebug);
 })();
 </script>
 
