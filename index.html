@@ -142,7 +142,6 @@ function render(){
     btn.style.backgroundImage=`url('${GEM_INFO[gem].img}')`;
     btn.style.backgroundPosition=`50% ${pct}%`;
   }
-  }
   const need=calcAll();
   needPlan.textContent=fmt(need.plan);needBook.textContent=fmt(need.book);needSecret.textContent=fmt(need.secret);
   lackPlan.textContent=fmt(Math.max(0,need.plan-Number(havePlan.value||0)));
