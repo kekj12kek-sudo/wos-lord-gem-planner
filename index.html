@@ -280,7 +280,7 @@ spriteInner.addEventListener("pointerup",e=>{
 // 画像タップ → 個数選択
 function openCountPop(lv){
   pending={gem:activeGem,mode:activeMode,lv};
-  document.getElementById("popTitle").textContent=`Lv${lv}（${activeMode==="current"?"現在":"目標"}）の個数`;
+  document.getElementById("popTitle").textContent=`Lv${lv}（${activeMode==="current"?"現在":"目標"}）`;
   const grid=document.getElementById("popGrid");
   grid.innerHTML="";
   for(let i=0;i<=6;i++){
@@ -290,6 +290,13 @@ function openCountPop(lv){
     b.onclick=()=>applyPop(i);
     grid.appendChild(b);
   }
+  [{label:"3set",qty:3},{label:"6set",qty:6}].forEach(({label,qty})=>{
+    const b=document.createElement("button");
+    b.className=state[activeGem][activeMode][lv]===qty?"popBtn main":"popBtn";
+    b.textContent=label;
+    b.onclick=()=>applyPop(qty);
+    grid.appendChild(b);
+  });
   document.getElementById("pop").classList.add("show");
 }
 
