@@ -8,71 +8,71 @@
 :root{--line:#78d4ff55;--text:#eefaff}
 *{box-sizing:border-box}
 body{margin:0;color:var(--text);font-family:system-ui,sans-serif;background:linear-gradient(180deg,#061524,#0b2b45 55%,#061524);font-weight:800}
-.app{max-width:760px;margin:0 auto;padding:14px 10px 34px}
-.header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
-.title{background:#0e3151;border:1px solid var(--line);border-radius:16px;padding:10px 14px;font-size:20px;box-shadow:0 7px 18px #0008}
-.tabs{display:flex;gap:8px}
-.tab{border:0;border-radius:999px;padding:10px 14px;color:#fff;background:#176596;font-weight:1000;cursor:pointer}
+.app{max-width:560px;margin:0 auto;padding:10px 8px 40px}
+.header{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+.title{background:#0e3151;border:1px solid var(--line);border-radius:14px;padding:8px 12px;font-size:17px;box-shadow:0 7px 18px #0008}
+.tabs{display:flex;gap:6px}
+.tab{border:0;border-radius:999px;padding:8px 12px;color:#fff;background:#176596;font-weight:1000;cursor:pointer;font-size:13px}
 .tab.active{background:linear-gradient(#ffcf62,#f39d22);color:#201100}
-.card{background:#0e3151dd;border:1px solid var(--line);border-radius:20px;padding:12px;margin:10px 0;box-shadow:0 8px 20px #0008}
-.cardTitle{font-size:13px;color:#d8f1ff;margin-bottom:8px}
-.levelBox{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.field label{display:block;font-size:12px;color:#aad8ef;margin:0 0 6px 4px}
-select,input{width:100%;border:1px solid #8bd8ff66;background:#071d31;color:#fff;border-radius:12px;padding:12px;font-size:16px;font-weight:900;outline:none}
-.bulkBtn{width:100%;border:1px solid #8bd8ff66;background:#12446f;color:#fff;border-radius:14px;padding:12px;font-size:16px;font-weight:1000;cursor:pointer}
-.help{font-size:12px;color:#d8f1ff;margin-top:8px}
-.matIcon{width:28px;height:28px;object-fit:contain;vertical-align:middle;margin-right:4px}
-.reset{width:100%;border:1px solid #ffbd5c88;background:linear-gradient(#ffcc64,#e8941d);color:#231200;border-radius:16px;padding:12px;font-size:16px;font-weight:1000;margin-top:12px;cursor:pointer}
-.totalBox{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.resultItem{background:#09243b;border:1px solid #7bd3ff33;border-radius:14px;padding:10px}
+.card{background:#0e3151dd;border:1px solid var(--line);border-radius:16px;padding:10px;margin:8px 0;box-shadow:0 8px 20px #0008}
+.cardTitle{font-size:12px;color:#d8f1ff;margin-bottom:6px}
+.levelBox{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.field label{display:flex;align-items:center;font-size:11px;color:#aad8ef;margin:0 0 4px 2px;gap:4px}
+select,input{width:100%;border:1px solid #8bd8ff66;background:#071d31;color:#fff;border-radius:10px;padding:10px;font-size:15px;font-weight:900;outline:none}
+.bulkBtn{width:100%;border:1px solid #8bd8ff66;background:#12446f;color:#fff;border-radius:12px;padding:10px;font-size:14px;font-weight:1000;cursor:pointer;margin-top:6px}
+.help{font-size:11px;color:#d8f1ff;margin-top:6px}
+.matIcon{width:24px;height:24px;object-fit:contain;flex-shrink:0}
+.reset{width:100%;border:1px solid #ffbd5c88;background:linear-gradient(#ffcc64,#e8941d);color:#231200;border-radius:14px;padding:11px;font-size:15px;font-weight:1000;margin-top:10px;cursor:pointer}
+.totalBox{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.totalBox3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.resultItem{background:#09243b;border:1px solid #7bd3ff33;border-radius:12px;padding:8px}
 .resultItem.lack{border-color:#ff667766;background:#351725}
-.resultLabel{color:#a8d8ef;font-size:12px}
-.resultValue{font-size:20px;color:#fff;margin-top:4px}
-
-/* タブコンテンツ切り替え */
+.resultLabel{color:#a8d8ef;font-size:11px;display:flex;align-items:center;gap:4px}
+.resultValue{font-size:18px;color:#fff;margin-top:2px}
 .tabContent{display:none}.tabContent.active{display:block}
 
-/* ===== 宝石タブ ===== */
-.stage{position:relative;border-radius:22px;overflow:hidden;aspect-ratio:1/1;background:#0c2f4d;box-shadow:0 10px 28px #0009;border:1px solid #7bd3ff33;margin-top:10px}
+/* ステージ共通 */
+.stage,.gearStage{position:relative;border-radius:18px;overflow:hidden;aspect-ratio:1/1;box-shadow:0 8px 24px #0009;border:1px solid #7bd3ff33;margin-top:8px}
+.stage{background:#0c2f4d}
 .stageImg{position:absolute;inset:0;background-image:url('gem_bg.webp');background-size:cover;background-position:center}
+.gearStage{background-image:url('gear_bg.webp');background-size:cover;background-position:center}
+
+/* タップボタン */
 .gemHot{position:absolute;width:14%;aspect-ratio:1;border:0;padding:0;background:radial-gradient(circle,#ffffff18,transparent 70%);transform:translate(-50%,-50%);cursor:pointer;z-index:10;border-radius:50%;animation:tapPulse 2s ease-in-out infinite}
 .gemHot:active{transform:translate(-50%,-50%) scale(0.85)!important}
-.badge{position:absolute;right:-8px;top:-5px;min-width:28px;height:22px;display:grid;place-items:center;padding:0 4px;background:linear-gradient(#ff6d78,#d82337);border:2px solid #fff;border-radius:999px;color:#fff;font-size:11px;line-height:1;pointer-events:none}
+.badge{position:absolute;right:-8px;top:-5px;min-width:26px;height:20px;display:grid;place-items:center;padding:0 4px;background:linear-gradient(#ff6d78,#d82337);border:2px solid #fff;border-radius:999px;color:#fff;font-size:10px;line-height:1;pointer-events:none}
 .gemHot[data-type="shield"]{left:50%;top:30%}
 .gemHot[data-type="lancer"]{left:35%;top:63%}
 .gemHot[data-type="marks"]{left:65%;top:63%}
 @keyframes tapPulse{0%,100%{box-shadow:0 0 0 0 #ffffff44}60%{box-shadow:0 0 0 12px #ffffff00}}
-.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
-.gemSummary{background:#09243b;border:1px solid #7bd3ff44;border-radius:16px;padding:10px;text-align:center;font-size:13px}
-.gemSummary strong{display:block;font-size:15px;color:#fff}
-
-/* ===== 装備タブ ===== */
-.gearStage{position:relative;border-radius:22px;overflow:hidden;aspect-ratio:1/1;background:#0c2f4d;box-shadow:0 10px 28px #0009;border:1px solid #7bd3ff33;margin-top:10px;background-image:url('gear_bg.webp');background-size:cover;background-position:center}
-.gearHot{position:absolute;border:0;padding:0;background:radial-gradient(circle,#ffffff18,transparent 70%);transform:translate(-50%,-50%);cursor:pointer;z-index:10;width:32%;aspect-ratio:1;border-radius:50%;animation:tapPulse 2s ease-in-out infinite}
+.gearHot{position:absolute;border:0;padding:0;background:radial-gradient(circle,#ffffff18,transparent 70%);transform:translate(-50%,-50%);cursor:pointer;z-index:10;width:32%;aspect-ratio:1;border-radius:50%;animation:tapPulse 2s ease-in-out infinite;left:50%;top:52%}
 .gearHot:active{transform:translate(-50%,-50%) scale(0.85)!important}
-.gearHot .badge{right:-8px;top:-5px}
-/* 装備6部位の配置（背景画像に合わせて調整） */
-.gearHot[data-slot="0"]{left:50%;top:48%}
-/* スロットバッジ一覧 */
-.gearSlots{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
-.gearSlot{background:#09243b;border:1px solid #7bd3ff44;border-radius:16px;padding:10px;text-align:center;font-size:13px;cursor:pointer}
-.gearSlot strong{display:block;font-size:14px;color:#fff;margin-bottom:4px}
+
+/* サマリ */
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0}
+.gemSummary{background:#09243b;border:1px solid #7bd3ff44;border-radius:14px;padding:8px;text-align:center;font-size:11px}
+.gemSummary strong{display:block;font-size:13px;color:#fff;margin-bottom:2px}
+.gearSlots{margin:8px 0}
+.gearSlot{background:#09243b;border:1px solid #7bd3ff44;border-radius:14px;padding:10px;font-size:12px}
+.gearSlot strong{display:block;font-size:13px;color:#fff;margin-bottom:4px}
 .gearSlot.hasData{border-color:#4af07a66}
 
-/* モーダル共通 */
-.modalOverlay{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;z-index:1000;padding:14px}
+/* モーダル */
+.modalOverlay{position:fixed;inset:0;background:#000a;display:none;align-items:flex-end;justify-content:center;z-index:1000;padding:0}
 .modalOverlay.show{display:flex}
-.modal{width:min(400px,100%);max-height:90vh;display:flex;flex-direction:column;background:#0e3151;border:1px solid #8bd8ff77;border-radius:18px;box-shadow:0 12px 35px #000c;overflow:hidden}
-.modalHead{display:flex;justify-content:space-between;align-items:center;padding:12px;border-bottom:1px solid #8bd8ff33;flex-shrink:0}
-.modalTitle{font-size:17px}
-.closeBtn{border:0;background:#072035;color:#fff;border-radius:10px;padding:8px 12px;font-weight:1000;cursor:pointer}
-.modalTabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px 12px;flex-shrink:0}
-.modeBtn{border:1px solid #8bd8ff66;background:#08243d;color:#fff;border-radius:12px;padding:11px;font-weight:1000;cursor:pointer}
+.modal{width:100%;max-width:560px;max-height:88vh;display:flex;flex-direction:column;background:#0e3151;border:1px solid #8bd8ff77;border-radius:18px 18px 0 0;box-shadow:0 -8px 30px #000c;overflow:hidden}
+.modalHead{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:1px solid #8bd8ff33;flex-shrink:0}
+.modalTitle{font-size:16px}
+.modalHeadBtns{display:flex;gap:8px}
+.closeBtn{border:0;background:#072035;color:#fff;border-radius:10px;padding:8px 12px;font-weight:1000;cursor:pointer;font-size:13px}
+.clearBtn{border:0;background:#4a1520;color:#ff9999;border-radius:10px;padding:8px 12px;font-weight:1000;cursor:pointer;font-size:13px}
+.modalTabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px 14px;flex-shrink:0}
+.modeBtn{border:1px solid #8bd8ff66;background:#08243d;color:#fff;border-radius:12px;padding:11px;font-weight:1000;cursor:pointer;font-size:14px}
 .modeBtn.active{background:linear-gradient(#ffcf62,#f39d22);color:#201100}
 
-/* スプライットモーダル共通 */
-.spriteScroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:8px 16px 16px;display:flex;justify-content:center}
-.spriteWrap{position:relative;width:160px;flex-shrink:0;align-self:flex-start;background:#09243b;border:1px solid #7bd3ff33;border-radius:12px;cursor:pointer}
+/* スプライット */
+.spriteScroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:8px 0 16px;display:flex;justify-content:center}
+.spriteWrap{position:relative;width:55vw;max-width:240px;flex-shrink:0;align-self:flex-start;background:#09243b;border:1px solid #7bd3ff33;border-radius:12px;cursor:pointer}
 .spriteWrap img{display:block;width:100%;height:auto;pointer-events:none;border-radius:12px}
 .hlBar{position:absolute;left:0;right:0;pointer-events:none;border-radius:4px}
 .hlBar.cur{background:#4af07a33;border:2px solid #4af07aaa}
@@ -82,17 +82,16 @@ select,input{width:100%;border:1px solid #8bd8ff66;background:#071d31;color:#fff
 .spriteRight{position:absolute;top:0;right:0;width:50%;z-index:2;cursor:pointer}
 
 /* ポップ */
-.pop{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:1100;background:#0007;padding:14px}
+.pop{position:fixed;inset:0;display:none;align-items:flex-end;justify-content:center;z-index:1100;background:#000a;padding:0}
 .pop.show{display:flex}
-.popBox{width:min(340px,100%);background:#0e3151;border:1px solid #8bd8ff77;border-radius:18px;padding:14px}
-.popTitle{margin-bottom:10px;font-size:15px}
+.popBox{width:100%;max-width:560px;background:#0e3151;border:1px solid #8bd8ff77;border-radius:18px 18px 0 0;padding:16px 14px calc(16px + env(safe-area-inset-bottom))}
+.popTitle{margin-bottom:12px;font-size:15px}
 .popGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .popGridSet{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
-.popBtn{border:0;background:#15537f;color:#fff;border-radius:10px;padding:13px 4px;font-size:14px;font-weight:1000;cursor:pointer}
+.popBtn{border:0;background:#15537f;color:#fff;border-radius:12px;padding:14px 4px;font-size:15px;font-weight:1000;cursor:pointer}
 .popBtn.main{background:linear-gradient(#ffcf62,#f39d22);color:#201100}
-.popClose{margin-top:10px;width:100%;border:1px solid #8bd8ff66;background:#061d31;color:#fff;border-radius:10px;padding:11px;font-weight:1000;cursor:pointer}
-
-@media(max-width:520px){.levelBox{grid-template-columns:1fr}.summary,.totalBox,.gearSlots{grid-template-columns:1fr}}
+.popClose{margin-top:10px;width:100%;border:1px solid #8bd8ff66;background:#061d31;color:#fff;border-radius:12px;padding:13px;font-weight:1000;cursor:pointer;font-size:15px}
+</style>
 </style>
 </head>
 <body>
@@ -136,13 +135,13 @@ select,input{width:100%;border:1px solid #8bd8ff66;background:#071d31;color:#fff
     </div>
     <div class="card">
       <div class="cardTitle">必要素材</div>
-      <div class="totalBox">
+      <div class="totalBox3">
         <div class="resultItem"><div class="resultLabel"><img src="mat_gem_plan.png" class="matIcon"> 宝石図面</div><div class="resultValue" id="needPlan">0</div></div>
         <div class="resultItem"><div class="resultLabel"><img src="mat_gem_book.png" class="matIcon"> 宝石ハンドブック</div><div class="resultValue" id="needBook">0</div></div>
         <div class="resultItem"><div class="resultLabel"><img src="mat_gem_secret.png" class="matIcon"> 宝石秘典</div><div class="resultValue" id="needSecret">0</div></div>
       </div>
-      <div class="cardTitle" style="margin-top:14px">不足素材</div>
-      <div class="totalBox">
+      <div class="cardTitle" style="margin-top:10px">不足素材</div>
+      <div class="totalBox3">
         <div class="resultItem lack"><div class="resultLabel"><img src="mat_gem_plan.png" class="matIcon"> 宝石図面</div><div class="resultValue" id="lackPlan">0</div></div>
         <div class="resultItem lack"><div class="resultLabel"><img src="mat_gem_book.png" class="matIcon"> 宝石ハンドブック</div><div class="resultValue" id="lackBook">0</div></div>
         <div class="resultItem lack"><div class="resultLabel"><img src="mat_gem_secret.png" class="matIcon"> 宝石秘典</div><div class="resultValue" id="lackSecret">0</div></div>
@@ -201,7 +200,10 @@ select,input{width:100%;border:1px solid #8bd8ff66;background:#071d31;color:#fff
   <div class="modal">
     <div class="modalHead">
       <div class="modalTitle" id="gemModalTitle">宝石の設定</div>
-      <button class="closeBtn" id="closeGemModal">閉じる</button>
+      <div class="modalHeadBtns">
+        <button class="clearBtn" id="clearGemModal">クリア</button>
+        <button class="closeBtn" id="closeGemModal">閉じる</button>
+      </div>
     </div>
     <div class="modalTabs">
       <button class="modeBtn active" data-mode="current">現在レベル</button>
@@ -225,7 +227,10 @@ select,input{width:100%;border:1px solid #8bd8ff66;background:#071d31;color:#fff
   <div class="modal">
     <div class="modalHead">
       <div class="modalTitle" id="gearModalTitle">装備の設定</div>
-      <button class="closeBtn" id="closeGearModal">閉じる</button>
+      <div class="modalHeadBtns">
+        <button class="clearBtn" id="clearGearModal">クリア</button>
+        <button class="closeBtn" id="closeGearModal">閉じる</button>
+      </div>
     </div>
     <div class="modalTabs">
       <button class="modeBtn gearModeBtn active" data-mode="current">現在レベル</button>
@@ -408,6 +413,11 @@ document.querySelectorAll("#gemModal .modeBtn").forEach(btn=>btn.addEventListene
   updateGemHighlights();
 }));
 document.getElementById("closeGemModal").onclick=()=>document.getElementById("gemModal").classList.remove("show");
+document.getElementById("clearGemModal").onclick=()=>{
+  gemState[activeGem].current=Array(17).fill(0);
+  gemState[activeGem].target=Array(17).fill(0);
+  updateGemHighlights();renderGem();
+};
 
 function openGemSetPop(lv){
   pending={type:"gem",gem:activeGem,mode:activeGemMode,lv};
@@ -580,6 +590,11 @@ document.querySelectorAll(".gearModeBtn").forEach(btn=>btn.addEventListener("cli
   updateGearHighlights();
 }));
 document.getElementById("closeGearModal").onclick=()=>document.getElementById("gearModal").classList.remove("show");
+document.getElementById("clearGearModal").onclick=()=>{
+  gearState.current=Array(21).fill(0);
+  gearState.target=Array(21).fill(0);
+  updateGearHighlights();renderGear();
+};
 
 function openGearLvPop(lv){
   pending={type:"gear",mode:activeGearMode,lv};
