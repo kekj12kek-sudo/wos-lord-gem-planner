@@ -467,6 +467,9 @@ function gearApplyAll(){
   renderGear();
 }
 
+function gearTotal(mode){return gearState[mode].reduce((s,v)=>s+v,0)}
+function gearSummarize(a){const p=[];for(let i=0;i<21;i++)if(a[i])p.push(`${GEAR_LV_NAMES[i]}×${a[i]}`);return p.length?p.join(" / "):"未設定"}
+
 function renderGearSlots(){
   const container=document.getElementById("gearSlots");
   container.innerHTML="";
