@@ -97,7 +97,7 @@ select,input{width:100%;border:1px solid #8bd8ff66;background:#071d31;color:#fff
 <body>
 <div class="app">
   <div class="header">
-    <div class="title">WOS Planner</div>
+    <div class="title" id="appTitle">宝石コスト計算</div>
     <div class="tabs">
       <button class="tab active" data-tab="gem">宝石LvUP</button>
       <button class="tab" data-tab="gear">装備強化</button>
@@ -112,7 +112,7 @@ select,input{width:100%;border:1px solid #8bd8ff66;background:#071d31;color:#fff
         <div class="field"><label>目標Lv</label><select id="bulkTarget"></select></div>
       </div>
       <button class="bulkBtn" id="applyAll">全宝石に一括適用</button>
-      <div class="help">宝石タップ＝個別設定 / 緑＝現在Lv / 橙＝目標Lv</div>
+      <div class="help">宝石をタップして現在・目標レベルを個別設定 / 一括適用で全宝石まとめて設定</div>
     </div>
     <div class="stage">
       <div class="stageImg"></div>
@@ -158,7 +158,7 @@ select,input{width:100%;border:1px solid #8bd8ff66;background:#071d31;color:#fff
         <div class="field"><label>目標レベル</label><select id="gearBulkTarget"></select></div>
       </div>
       <button class="bulkBtn" id="gearApplyAll">全装備に一括適用（6部位）</button>
-      <div class="help">中央の装備タップ＝個別設定 / 緑＝現在レベル / 橙＝目標レベル</div>
+      <div class="help">中央の装備をタップして現在・目標レベルを個別設定 / 最大6部位まで設定可能 / 一括適用で全部位まとめて設定</div>
     </div>
     <!-- 装備ステージ: 背景画像 + 中央タップのみ -->
     <div class="gearStage" id="gearStage">
@@ -308,10 +308,12 @@ function total(a){return a.reduce((s,v)=>s+v,0)}
 function summarize(a){const p=[];for(let i=1;i<=16;i++)if(a[i])p.push(`Lv${i}×${a[i]}`);return p.length?p.join(" / "):"未設定"}
 
 // ===== タブ切り替え =====
+const TAB_TITLES={"gem":"宝石コスト計算","gear":"神話装備コスト計算"};
 document.querySelectorAll(".tab[data-tab]").forEach(btn=>{
   btn.addEventListener("click",()=>{
     document.querySelectorAll(".tab[data-tab]").forEach(b=>b.classList.toggle("active",b===btn));
     document.querySelectorAll(".tabContent").forEach(c=>c.classList.toggle("active",c.id==="tab-"+btn.dataset.tab));
+    document.getElementById("appTitle").textContent=TAB_TITLES[btn.dataset.tab]||"WOS Planner";
   });
 });
 
