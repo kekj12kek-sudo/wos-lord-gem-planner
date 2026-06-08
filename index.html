@@ -554,8 +554,20 @@ gearSpriteWrap.addEventListener("pointerleave",()=>gearHlHover.style.display="no
 gearSpriteWrap.addEventListener("click",e=>{
   const rect=gearSpriteImg.getBoundingClientRect();
   const y=e.clientY-rect.top;
-  const lv=gearYToLv(y);
-  openGearLvPop(lv);
+  openGearLvPop(gearYToLv(y));
+});
+let gearTouchStartY=0;
+gearSpriteWrap.addEventListener("touchstart",e=>{
+  gearTouchStartY=e.touches[0].clientY;
+},{passive:true});
+gearSpriteWrap.addEventListener("touchend",e=>{
+  const dy=Math.abs(e.changedTouches[0].clientY-gearTouchStartY);
+  if(dy>10)return; // スクロールなので無視
+  e.preventDefault();
+  const touch=e.changedTouches[0];
+  const rect=gearSpriteImg.getBoundingClientRect();
+  const y=touch.clientY-rect.top;
+  openGearLvPop(gearYToLv(y));
 });
 
 document.querySelectorAll(".gearModeBtn").forEach(btn=>btn.addEventListener("click",()=>{
