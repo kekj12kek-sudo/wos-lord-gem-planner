@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>宝石LvUP Planner</title>
+<title>WOS Planner</title>
 <style>
 :root{--line:#78d4ff55;--text:#eefaff}
 *{box-sizing:border-box}
@@ -21,28 +21,41 @@ body{margin:0;color:var(--text);font-family:system-ui,sans-serif;background:line
 select,input{width:100%;border:1px solid #8bd8ff66;background:#071d31;color:#fff;border-radius:12px;padding:12px;font-size:16px;font-weight:900;outline:none}
 .bulkBtn{width:100%;border:1px solid #8bd8ff66;background:#12446f;color:#fff;border-radius:14px;padding:12px;font-size:16px;font-weight:1000;cursor:pointer}
 .help{font-size:12px;color:#d8f1ff;margin-top:8px}
-
-/* ステージ */
-.stage{position:relative;border-radius:22px;overflow:hidden;aspect-ratio:1403/1121;background:#0c2f4d;box-shadow:0 10px 28px #0009;border:1px solid #7bd3ff33;margin-top:10px}
-.stageImg{position:absolute;inset:0;background-image:url('gem_bg.webp');background-size:cover;background-position:center}
-.gemHot{position:absolute;width:10%;aspect-ratio:1;border:0;padding:0;background:transparent;transform:translate(-50%,-50%);cursor:pointer;z-index:10}
-.gemHot img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 4px 8px #000a);pointer-events:none}
-.badge{position:absolute;right:-8px;top:-5px;min-width:28px;height:22px;display:grid;place-items:center;padding:0 4px;background:linear-gradient(#ff6d78,#d82337);border:2px solid #fff;border-radius:999px;color:#fff;font-size:11px;line-height:1;pointer-events:none}
-.gemHot[data-type="shield"]{left:50%;top:28%}
-.gemHot[data-type="lancer"]{left:35%;top:62%}
-.gemHot[data-type="marks"]{left:65%;top:62%}
-
-.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
-.gemSummary{background:#09243b;border:1px solid #7bd3ff44;border-radius:16px;padding:10px;text-align:center;font-size:13px}
-.gemSummary strong{display:block;font-size:15px;color:#fff}
+.reset{width:100%;border:1px solid #ffbd5c88;background:linear-gradient(#ffcc64,#e8941d);color:#231200;border-radius:16px;padding:12px;font-size:16px;font-weight:1000;margin-top:12px;cursor:pointer}
 .totalBox{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .resultItem{background:#09243b;border:1px solid #7bd3ff33;border-radius:14px;padding:10px}
 .resultItem.lack{border-color:#ff667766;background:#351725}
 .resultLabel{color:#a8d8ef;font-size:12px}
 .resultValue{font-size:20px;color:#fff;margin-top:4px}
-.reset{width:100%;border:1px solid #ffbd5c88;background:linear-gradient(#ffcc64,#e8941d);color:#231200;border-radius:16px;padding:12px;font-size:16px;font-weight:1000;margin-top:12px;cursor:pointer}
 
-/* モーダル */
+/* タブコンテンツ切り替え */
+.tabContent{display:none}.tabContent.active{display:block}
+
+/* ===== 宝石タブ ===== */
+.stage{position:relative;border-radius:22px;overflow:hidden;aspect-ratio:1403/1121;background:#0c2f4d;box-shadow:0 10px 28px #0009;border:1px solid #7bd3ff33;margin-top:10px}
+.stageImg{position:absolute;inset:0;background-image:url('gem_bg.webp');background-size:cover;background-position:center}
+.gemHot{position:absolute;width:10%;aspect-ratio:1;border:0;padding:0;background:transparent;transform:translate(-50%,-50%);cursor:pointer;z-index:10}
+.badge{position:absolute;right:-8px;top:-5px;min-width:28px;height:22px;display:grid;place-items:center;padding:0 4px;background:linear-gradient(#ff6d78,#d82337);border:2px solid #fff;border-radius:999px;color:#fff;font-size:11px;line-height:1;pointer-events:none}
+.gemHot[data-type="shield"]{left:50%;top:28%}
+.gemHot[data-type="lancer"]{left:35%;top:62%}
+.gemHot[data-type="marks"]{left:65%;top:62%}
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.gemSummary{background:#09243b;border:1px solid #7bd3ff44;border-radius:16px;padding:10px;text-align:center;font-size:13px}
+.gemSummary strong{display:block;font-size:15px;color:#fff}
+
+/* ===== 装備タブ ===== */
+.gearStage{position:relative;border-radius:22px;overflow:hidden;aspect-ratio:1403/1121;background:#0c2f4d;box-shadow:0 10px 28px #0009;border:1px solid #7bd3ff33;margin-top:10px;background-image:url('gear_bg.webp');background-size:cover;background-position:center}
+.gearHot{position:absolute;border:0;padding:0;background:transparent;transform:translate(-50%,-50%);cursor:pointer;z-index:10;width:18%;aspect-ratio:1}
+.gearHot .badge{right:-8px;top:-5px}
+/* 装備6部位の配置（背景画像に合わせて調整） */
+.gearHot[data-slot="0"]{left:50%;top:48%}
+/* スロットバッジ一覧 */
+.gearSlots{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.gearSlot{background:#09243b;border:1px solid #7bd3ff44;border-radius:16px;padding:10px;text-align:center;font-size:13px;cursor:pointer}
+.gearSlot strong{display:block;font-size:14px;color:#fff;margin-bottom:4px}
+.gearSlot.hasData{border-color:#4af07a66}
+
+/* モーダル共通 */
 .modalOverlay{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;z-index:1000;padding:14px}
 .modalOverlay.show{display:flex}
 .modal{width:min(400px,100%);max-height:90vh;display:flex;flex-direction:column;background:#0e3151;border:1px solid #8bd8ff77;border-radius:18px;box-shadow:0 12px 35px #000c;overflow:hidden}
@@ -53,20 +66,18 @@ select,input{width:100%;border:1px solid #8bd8ff66;background:#071d31;color:#fff
 .modeBtn{border:1px solid #8bd8ff66;background:#08243d;color:#fff;border-radius:12px;padding:11px;font-weight:1000;cursor:pointer}
 .modeBtn.active{background:linear-gradient(#ffcf62,#f39d22);color:#201100}
 
-/* スプライットモーダル */
+/* スプライットモーダル共通 */
 .spriteScroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:8px 16px 16px;display:flex;justify-content:center}
 .spriteWrap{position:relative;width:180px;flex-shrink:0;align-self:flex-start}
 .spriteWrap img{display:block;width:100%;height:auto;pointer-events:none}
-/* ハイライト */
 .hlBar{position:absolute;left:0;right:0;pointer-events:none;border-radius:4px}
 .hlBar.cur{background:#4af07a33;border:2px solid #4af07aaa}
 .hlBar.tgt{background:#ff9f3333;border:2px solid #ff9f33aa}
 .hlBar.hover{background:#ffffff18;border:2px solid #ffffff66}
-/* クリック領域 - 高さはJSで設定 */
 .spriteLeft{position:absolute;top:0;left:0;width:50%;z-index:2;cursor:pointer}
 .spriteRight{position:absolute;top:0;right:0;width:50%;z-index:2;cursor:pointer}
 
-/* ポップ共通 */
+/* ポップ */
 .pop{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:1100;background:#0007;padding:14px}
 .pop.show{display:flex}
 .popBox{width:min(340px,100%);background:#0e3151;border:1px solid #8bd8ff77;border-radius:18px;padding:14px}
@@ -77,91 +88,156 @@ select,input{width:100%;border:1px solid #8bd8ff66;background:#071d31;color:#fff
 .popBtn.main{background:linear-gradient(#ffcf62,#f39d22);color:#201100}
 .popClose{margin-top:10px;width:100%;border:1px solid #8bd8ff66;background:#061d31;color:#fff;border-radius:10px;padding:11px;font-weight:1000;cursor:pointer}
 
-@media(max-width:520px){.levelBox{grid-template-columns:1fr}.summary,.totalBox{grid-template-columns:1fr}}
+@media(max-width:520px){.levelBox{grid-template-columns:1fr}.summary,.totalBox,.gearSlots{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div class="app">
   <div class="header">
-    <div class="title">宝石LvUP Planner</div>
-    <div class="tabs"><button class="tab active">宝石LvUP</button><button class="tab">装備強化</button></div>
-  </div>
-  <div class="card">
-    <div class="levelBox">
-      <div class="field"><label>現在Lv</label><select id="bulkCurrent"></select></div>
-      <div class="field"><label>目標Lv</label><select id="bulkTarget"></select></div>
-    </div>
-    <button class="bulkBtn" id="applyAll">全宝石に一括適用</button>
-    <div class="help">宝石タップ＝個別設定 / 緑ハイライト＝現在Lv / 橙ハイライト＝目標Lv</div>
-  </div>
-  <div class="stage">
-    <div class="stageImg"></div>
-    <button class="gemHot" data-type="shield" aria-label="盾宝石">
-      <span class="badge" id="badge-shield">0個</span>
-    </button>
-    <button class="gemHot" data-type="lancer" aria-label="槍宝石">
-      <span class="badge" id="badge-lancer">0個</span>
-    </button>
-    <button class="gemHot" data-type="marks" aria-label="弓宝石">
-      <span class="badge" id="badge-marks">0個</span>
-    </button>
-  </div>
-  <div class="summary">
-    <div class="gemSummary" id="sum-shield"><strong>盾宝石</strong>現在：未設定<br>目標：未設定</div>
-    <div class="gemSummary" id="sum-lancer"><strong>槍宝石</strong>現在：未設定<br>目標：未設定</div>
-    <div class="gemSummary" id="sum-marks"><strong>弓宝石</strong>現在：未設定<br>目標：未設定</div>
-  </div>
-  <div class="card">
-    <div class="cardTitle">所持素材</div>
-    <div class="levelBox">
-      <div class="field"><label>宝石図面</label><input id="havePlan" type="number" min="0" value="0"></div>
-      <div class="field"><label>宝石ハンドブック</label><input id="haveBook" type="number" min="0" value="0"></div>
-      <div class="field"><label>宝石秘典</label><input id="haveSecret" type="number" min="0" value="0"></div>
+    <div class="title">WOS Planner</div>
+    <div class="tabs">
+      <button class="tab active" data-tab="gem">宝石LvUP</button>
+      <button class="tab" data-tab="gear">装備強化</button>
     </div>
   </div>
-  <div class="card">
-    <div class="cardTitle">必要素材</div>
-    <div class="totalBox">
-      <div class="resultItem"><div class="resultLabel">宝石図面</div><div class="resultValue" id="needPlan">0</div></div>
-      <div class="resultItem"><div class="resultLabel">宝石ハンドブック</div><div class="resultValue" id="needBook">0</div></div>
-      <div class="resultItem"><div class="resultLabel">宝石秘典</div><div class="resultValue" id="needSecret">0</div></div>
+
+  <!-- ===== 宝石タブ ===== -->
+  <div class="tabContent active" id="tab-gem">
+    <div class="card">
+      <div class="levelBox">
+        <div class="field"><label>現在Lv</label><select id="bulkCurrent"></select></div>
+        <div class="field"><label>目標Lv</label><select id="bulkTarget"></select></div>
+      </div>
+      <button class="bulkBtn" id="applyAll">全宝石に一括適用</button>
+      <div class="help">宝石タップ＝個別設定 / 緑＝現在Lv / 橙＝目標Lv</div>
     </div>
-    <div class="cardTitle" style="margin-top:14px">不足素材</div>
-    <div class="totalBox">
-      <div class="resultItem lack"><div class="resultLabel">宝石図面</div><div class="resultValue" id="lackPlan">0</div></div>
-      <div class="resultItem lack"><div class="resultLabel">宝石ハンドブック</div><div class="resultValue" id="lackBook">0</div></div>
-      <div class="resultItem lack"><div class="resultLabel">宝石秘典</div><div class="resultValue" id="lackSecret">0</div></div>
+    <div class="stage">
+      <div class="stageImg"></div>
+      <button class="gemHot" data-type="shield"><span class="badge" id="badge-shield">0個</span></button>
+      <button class="gemHot" data-type="lancer"><span class="badge" id="badge-lancer">0個</span></button>
+      <button class="gemHot" data-type="marks"><span class="badge" id="badge-marks">0個</span></button>
     </div>
-    <button class="reset" id="resetAll">設定をリセット</button>
+    <div class="summary">
+      <div class="gemSummary" id="sum-shield"><strong>盾宝石</strong>現在：未設定<br>目標：未設定</div>
+      <div class="gemSummary" id="sum-lancer"><strong>槍宝石</strong>現在：未設定<br>目標：未設定</div>
+      <div class="gemSummary" id="sum-marks"><strong>弓宝石</strong>現在：未設定<br>目標：未設定</div>
+    </div>
+    <div class="card">
+      <div class="cardTitle">所持素材</div>
+      <div class="levelBox">
+        <div class="field"><label>宝石図面</label><input id="havePlan" type="number" min="0" value="0"></div>
+        <div class="field"><label>宝石ハンドブック</label><input id="haveBook" type="number" min="0" value="0"></div>
+        <div class="field"><label>宝石秘典</label><input id="haveSecret" type="number" min="0" value="0"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="cardTitle">必要素材</div>
+      <div class="totalBox">
+        <div class="resultItem"><div class="resultLabel">宝石図面</div><div class="resultValue" id="needPlan">0</div></div>
+        <div class="resultItem"><div class="resultLabel">宝石ハンドブック</div><div class="resultValue" id="needBook">0</div></div>
+        <div class="resultItem"><div class="resultLabel">宝石秘典</div><div class="resultValue" id="needSecret">0</div></div>
+      </div>
+      <div class="cardTitle" style="margin-top:14px">不足素材</div>
+      <div class="totalBox">
+        <div class="resultItem lack"><div class="resultLabel">宝石図面</div><div class="resultValue" id="lackPlan">0</div></div>
+        <div class="resultItem lack"><div class="resultLabel">宝石ハンドブック</div><div class="resultValue" id="lackBook">0</div></div>
+        <div class="resultItem lack"><div class="resultLabel">宝石秘典</div><div class="resultValue" id="lackSecret">0</div></div>
+      </div>
+      <button class="reset" id="resetGem">設定をリセット</button>
+    </div>
+  </div>
+
+  <!-- ===== 装備タブ ===== -->
+  <div class="tabContent" id="tab-gear">
+    <div class="card">
+      <div class="help">中央の装備をタップ → 各スロットの現在/目標レベルを設定</div>
+    </div>
+    <!-- 装備ステージ: 背景画像 + 中央タップボタン -->
+    <div class="gearStage" id="gearStage">
+      <button class="gearHot" data-slot="0" style="left:50%;top:48%">
+        <span class="badge" id="gbadge-0">未設定</span>
+      </button>
+    </div>
+    <!-- スロット一覧 -->
+    <div class="gearSlots" id="gearSlots"></div>
+    <div class="card">
+      <div class="cardTitle">所持素材</div>
+      <div class="levelBox">
+        <div class="field"><label>合金</label><input id="haveAlloy" type="number" min="0" value="0"></div>
+        <div class="field"><label>研磨剤</label><input id="havePolish" type="number" min="0" value="0"></div>
+        <div class="field"><label>設計図</label><input id="havePlanG" type="number" min="0" value="0"></div>
+        <div class="field"><label>琥珀</label><input id="haveAmber" type="number" min="0" value="0"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="cardTitle">必要素材</div>
+      <div class="totalBox" style="grid-template-columns:repeat(2,1fr)">
+        <div class="resultItem"><div class="resultLabel">合金</div><div class="resultValue" id="needAlloy">0</div></div>
+        <div class="resultItem"><div class="resultLabel">研磨剤</div><div class="resultValue" id="needPolish">0</div></div>
+        <div class="resultItem"><div class="resultLabel">設計図</div><div class="resultValue" id="needPlanG">0</div></div>
+        <div class="resultItem"><div class="resultLabel">琥珀</div><div class="resultValue" id="needAmber">0</div></div>
+      </div>
+      <div class="cardTitle" style="margin-top:14px">不足素材</div>
+      <div class="totalBox" style="grid-template-columns:repeat(2,1fr)">
+        <div class="resultItem lack"><div class="resultLabel">合金</div><div class="resultValue" id="lackAlloy">0</div></div>
+        <div class="resultItem lack"><div class="resultLabel">研磨剤</div><div class="resultValue" id="lackPolish">0</div></div>
+        <div class="resultItem lack"><div class="resultLabel">設計図</div><div class="resultValue" id="lackPlanG">0</div></div>
+        <div class="resultItem lack"><div class="resultLabel">琥珀</div><div class="resultValue" id="lackAmber">0</div></div>
+      </div>
+      <button class="reset" id="resetGear">設定をリセット</button>
+    </div>
   </div>
 </div>
 
-<!-- モーダル -->
-<div class="modalOverlay" id="modalOverlay">
+<!-- 宝石モーダル -->
+<div class="modalOverlay" id="gemModal">
   <div class="modal">
     <div class="modalHead">
-      <div class="modalTitle" id="modalTitle">宝石の設定</div>
-      <button class="closeBtn" id="closeModal">閉じる</button>
+      <div class="modalTitle" id="gemModalTitle">宝石の設定</div>
+      <button class="closeBtn" id="closeGemModal">閉じる</button>
     </div>
     <div class="modalTabs">
       <button class="modeBtn active" data-mode="current">現在レベル</button>
       <button class="modeBtn" data-mode="target">目標レベル</button>
     </div>
     <div class="spriteScroll">
-      <div class="spriteWrap" id="spriteWrap">
-        <img id="spriteImg" src="" alt="">
-        <div class="hlBar cur" id="hlCur" style="display:none"></div>
-        <div class="hlBar tgt" id="hlTgt" style="display:none"></div>
-        <div class="hlBar hover" id="hlHover" style="display:none"></div>
-        <!-- 左半分タップ=set、右半分タップ=個数 -->
-        <div class="spriteLeft" id="spriteLeft"></div>
-        <div class="spriteRight" id="spriteRight"></div>
+      <div class="spriteWrap" id="gemSpriteWrap">
+        <img id="gemSpriteImg" src="" alt="">
+        <div class="hlBar cur" id="gemHlCur" style="display:none"></div>
+        <div class="hlBar tgt" id="gemHlTgt" style="display:none"></div>
+        <div class="hlBar hover" id="gemHlHover" style="display:none"></div>
+        <div class="spriteLeft" id="gemSpriteLeft"></div>
+        <div class="spriteRight" id="gemSpriteRight"></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- 個数/setポップ -->
+<!-- 装備モーダル -->
+<div class="modalOverlay" id="gearModal">
+  <div class="modal">
+    <div class="modalHead">
+      <div class="modalTitle" id="gearModalTitle">装備の設定</div>
+      <button class="closeBtn" id="closeGearModal">閉じる</button>
+    </div>
+    <div class="modalTabs">
+      <button class="gearModeBtn active" data-mode="current">現在レベル</button>
+      <button class="gearModeBtn" data-mode="target">目標レベル</button>
+    </div>
+    <div class="spriteScroll">
+      <div class="spriteWrap" id="gearSpriteWrap">
+        <img id="gearSpriteImg" src="gear_sprite.png" alt="">
+        <div class="hlBar cur" id="gearHlCur" style="display:none"></div>
+        <div class="hlBar tgt" id="gearHlTgt" style="display:none"></div>
+        <div class="hlBar hover" id="gearHlHover" style="display:none"></div>
+        <div class="spriteLeft" id="gearSpriteLeft"></div>
+        <div class="spriteRight" id="gearSpriteRight"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ポップ -->
 <div class="pop" id="pop">
   <div class="popBox">
     <div class="popTitle" id="popTitle"></div>
@@ -172,208 +248,353 @@ select,input{width:100%;border:1px solid #8bd8ff66;background:#071d31;color:#fff
 </div>
 
 <script>
+// ===== 宝石データ =====
 const GEM_COSTS={0:{plan:5,book:5,secret:0},1:{plan:15,book:40,secret:0},2:{plan:40,book:60,secret:0},3:{plan:100,book:80,secret:0},4:{plan:200,book:100,secret:0},5:{plan:300,book:120,secret:0},6:{plan:400,book:140,secret:0},7:{plan:400,book:200,secret:0},8:{plan:400,book:300,secret:0},9:{plan:420,book:420,secret:0},10:{plan:420,book:560,secret:0},11:{plan:450,book:580,secret:15},12:{plan:450,book:580,secret:30},13:{plan:500,book:600,secret:45},14:{plan:500,book:600,secret:70},15:{plan:550,book:650,secret:100}};
 const GEM_INFO={shield:{name:"盾宝石",img:"gem_green.png"},lancer:{name:"槍宝石",img:"gem_blue.png"},marks:{name:"弓宝石",img:"gem_orange.png"}};
-const ROWS=16;
-const state={
+const GEM_ROWS=16;
+
+// ===== 装備データ =====
+const GEAR_LV_NAMES=["レジェT2★★★","神話","神話★","神話★★","神話★★★","神話T1","神話T1★","神話T1★★","神話T1★★★","神話T2","神話T2★","神話T2★★","神話T2★★★","神話T3","神話T3★","神話T3★★","神話T3★★★","神話T4","神話T4★","神話T4★★","神話T4★★★"];
+const GEAR_COSTS=[
+  {alloy:50000,polish:530,plan:85,amber:10},
+  {alloy:52000,polish:560,plan:90,amber:10},
+  {alloy:54000,polish:590,plan:95,amber:10},
+  {alloy:56000,polish:620,plan:100,amber:10},
+  {alloy:59000,polish:670,plan:110,amber:15},
+  {alloy:61000,polish:700,plan:115,amber:15},
+  {alloy:63000,polish:730,plan:120,amber:15},
+  {alloy:65000,polish:760,plan:125,amber:15},
+  {alloy:68000,polish:810,plan:135,amber:20},
+  {alloy:70000,polish:840,plan:140,amber:20},
+  {alloy:72000,polish:870,plan:145,amber:20},
+  {alloy:74000,polish:900,plan:150,amber:20},
+  {alloy:77000,polish:950,plan:160,amber:25},
+  {alloy:80000,polish:990,plan:165,amber:25},
+  {alloy:83000,polish:1030,plan:170,amber:25},
+  {alloy:86000,polish:1070,plan:180,amber:25},
+  {alloy:120000,polish:1500,plan:250,amber:40},
+  {alloy:140000,polish:1650,plan:275,amber:40},
+  {alloy:160000,polish:1800,plan:300,amber:40},
+  {alloy:180000,polish:1950,plan:325,amber:40},
+];
+const GEAR_ROWS=21;
+// スロット6個: current/target各Lv(0-20)
+const gearState={
+  current:Array(6).fill(null), // null=未設定, 0-20=レベル
+  target:Array(6).fill(null)
+};
+
+// ===== 宝石state =====
+const gemState={
   shield:{current:Array(17).fill(0),target:Array(17).fill(0)},
   lancer:{current:Array(17).fill(0),target:Array(17).fill(0)},
   marks:{current:Array(17).fill(0),target:Array(17).fill(0)}
 };
-let activeGem="shield",activeMode="current",pending={gem:null,mode:null,lv:null};
+let activeGem="shield",activeGemMode="current";
+let activeGearSlot=0,activeGearMode="current";
+let pending={type:null,gem:null,mode:null,lv:null,slot:null};
 
 function fmt(n){return Number(n||0).toLocaleString("ja-JP")}
 function total(a){return a.reduce((s,v)=>s+v,0)}
 function summarize(a){const p=[];for(let i=1;i<=16;i++)if(a[i])p.push(`Lv${i}×${a[i]}`);return p.length?p.join(" / "):"未設定"}
-function lvColor(lv){return lv<=2?"green":lv<=4?"blue":lv<=7?"purple":lv<=11?"orange":"red"}
 
+// ===== タブ切り替え =====
+document.querySelectorAll(".tab[data-tab]").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    document.querySelectorAll(".tab[data-tab]").forEach(b=>b.classList.toggle("active",b===btn));
+    document.querySelectorAll(".tabContent").forEach(c=>c.classList.toggle("active",c.id==="tab-"+btn.dataset.tab));
+  });
+});
+
+// ===== 宝石 =====
 function fillSelects(){
   const c=document.getElementById("bulkCurrent"),t=document.getElementById("bulkTarget");
   for(let i=0;i<=16;i++)c.add(new Option("Lv"+i,i));
   for(let i=1;i<=16;i++)t.add(new Option("Lv"+i,i));
   c.value=1;t.value=16;
 }
-function buildPairs(gem){
+function gemBuildPairs(gem){
   const cur=[],tar=[];
-  for(let lv=0;lv<=16;lv++){for(let i=0;i<state[gem].current[lv];i++)cur.push(lv);for(let i=0;i<state[gem].target[lv];i++)tar.push(lv)}
+  for(let lv=0;lv<=16;lv++){for(let i=0;i<gemState[gem].current[lv];i++)cur.push(lv);for(let i=0;i<gemState[gem].target[lv];i++)tar.push(lv)}
   const pairs=[];
   for(let i=0;i<Math.min(cur.length,tar.length);i++)if(tar[i]>cur[i])pairs.push({from:cur[i],to:tar[i]});
   return pairs;
 }
-function calcOne(from,to){let plan=0,book=0,secret=0;for(let lv=from;lv<to;lv++){const r=GEM_COSTS[lv]||{};plan+=r.plan||0;book+=r.book||0;secret+=r.secret||0}return{plan,book,secret}}
-function calcAll(){const need={plan:0,book:0,secret:0};for(const gem of Object.keys(state))for(const p of buildPairs(gem)){const c=calcOne(p.from,p.to);need.plan+=c.plan;need.book+=c.book;need.secret+=c.secret}return need}
+function gemCalcOne(from,to){let plan=0,book=0,secret=0;for(let lv=from;lv<to;lv++){const r=GEM_COSTS[lv]||{};plan+=r.plan||0;book+=r.book||0;secret+=r.secret||0}return{plan,book,secret}}
+function gemCalcAll(){const need={plan:0,book:0,secret:0};for(const gem of Object.keys(gemState))for(const p of gemBuildPairs(gem)){const c=gemCalcOne(p.from,p.to);need.plan+=c.plan;need.book+=c.book;need.secret+=c.secret}return need}
+function gemTotal(gem,mode){return gemState[gem][mode].reduce((s,v)=>s+v,0)}
+function gemAllTotal(mode){return Object.keys(GEM_INFO).reduce((s,gem)=>s+gemTotal(gem,mode),0)}
 
-function render(){
+function renderGem(){
   for(const gem of Object.keys(GEM_INFO)){
-    const ct=total(state[gem].current),tt=total(state[gem].target);
+    const ct=total(gemState[gem].current),tt=total(gemState[gem].target);
     document.getElementById("badge-"+gem).textContent=ct+"個";
-    document.getElementById("sum-"+gem).innerHTML=`<strong>${GEM_INFO[gem].name}</strong>現在：${summarize(state[gem].current)}<br>目標：${summarize(state[gem].target)}<br>設定：現在${ct}個 / 目標${tt}個`;
+    document.getElementById("sum-"+gem).innerHTML=`<strong>${GEM_INFO[gem].name}</strong>現在：${summarize(gemState[gem].current)}<br>目標：${summarize(gemState[gem].target)}<br>設定：現在${ct}個 / 目標${tt}個`;
   }
-  const need=calcAll();
+  const need=gemCalcAll();
   document.getElementById("needPlan").textContent=fmt(need.plan);
   document.getElementById("needBook").textContent=fmt(need.book);
   document.getElementById("needSecret").textContent=fmt(need.secret);
   document.getElementById("lackPlan").textContent=fmt(Math.max(0,need.plan-Number(document.getElementById("havePlan").value||0)));
   document.getElementById("lackBook").textContent=fmt(Math.max(0,need.book-Number(document.getElementById("haveBook").value||0)));
   document.getElementById("lackSecret").textContent=fmt(Math.max(0,need.secret-Number(document.getElementById("haveSecret").value||0)));
-  if(document.getElementById("modalOverlay").classList.contains("show"))updateHighlights();
+  if(document.getElementById("gemModal").classList.contains("show"))updateGemHighlights();
 }
 
-// ---- モーダル スプライット ----
-const spriteImg=document.getElementById("spriteImg");
-const hlCur=document.getElementById("hlCur");
-const hlTgt=document.getElementById("hlTgt");
-const hlHover=document.getElementById("hlHover");
-const spriteLeft=document.getElementById("spriteLeft");
-const spriteRight=document.getElementById("spriteRight");
+// 宝石モーダル
+const gemSpriteImg=document.getElementById("gemSpriteImg");
+const gemHlCur=document.getElementById("gemHlCur");
+const gemHlTgt=document.getElementById("gemHlTgt");
+const gemHlHover=document.getElementById("gemHlHover");
+const gemSpriteLeft=document.getElementById("gemSpriteLeft");
+const gemSpriteRight=document.getElementById("gemSpriteRight");
 
-function getRowH(){return spriteImg.offsetHeight/16}
-function yToLv(y){return Math.min(16,Math.max(1,Math.ceil(y/getRowH())))}
-function lvToRect(lv){const h=getRowH();return{top:(lv-1)*h,h}}
+function gemRowH(){return gemSpriteImg.offsetHeight/GEM_ROWS}
+function gemYToLv(y){return Math.min(GEM_ROWS,Math.max(1,Math.ceil(y/gemRowH())))}
+function gemLvToRect(lv){const h=gemRowH();return{top:(lv-1)*h,h}}
 
-function updateHighlights(){
-  const imgH=spriteImg.offsetHeight;
-  if(!imgH)return;
-  const curLv=state[activeGem].current.findIndex((v,i)=>i>0&&v>0);
-  const tgtLv=state[activeGem].target.findIndex((v,i)=>i>0&&v>0);
-  if(curLv>0){const{top,h}=lvToRect(curLv);hlCur.style.cssText=`display:block;top:${top}px;height:${h}px`}
-  else hlCur.style.display="none";
-  if(tgtLv>0){const{top,h}=lvToRect(tgtLv);hlTgt.style.cssText=`display:block;top:${top}px;height:${h}px`}
-  else hlTgt.style.display="none";
+function updateGemHighlights(){
+  const imgH=gemSpriteImg.offsetHeight;if(!imgH)return;
+  const curLv=gemState[activeGem].current.findIndex((v,i)=>i>0&&v>0);
+  const tgtLv=gemState[activeGem].target.findIndex((v,i)=>i>0&&v>0);
+  if(curLv>0){const{top,h}=gemLvToRect(curLv);gemHlCur.style.cssText=`display:block;top:${top}px;height:${h}px`}else gemHlCur.style.display="none";
+  if(tgtLv>0){const{top,h}=gemLvToRect(tgtLv);gemHlTgt.style.cssText=`display:block;top:${top}px;height:${h}px`}else gemHlTgt.style.display="none";
 }
-
-function setClickAreaHeight(){
-  const h=spriteImg.offsetHeight;
-  spriteLeft.style.height=h+"px";
-  spriteRight.style.height=h+"px";
-}
+function setGemClickH(){const h=gemSpriteImg.offsetHeight;gemSpriteLeft.style.height=h+"px";gemSpriteRight.style.height=h+"px";}
 
 function openGem(gem){
-  activeGem=gem;activeMode="current";
-  document.getElementById("modalTitle").textContent=GEM_INFO[gem].name+" の設定";
-  document.querySelectorAll(".modeBtn").forEach(b=>b.classList.toggle("active",b.dataset.mode==="current"));
-  hlCur.style.display="none";hlTgt.style.display="none";hlHover.style.display="none";
-  spriteImg.src=GEM_INFO[gem].img;
-  document.getElementById("modalOverlay").classList.add("show");
-  if(spriteImg.complete&&spriteImg.naturalHeight){setClickAreaHeight();updateHighlights();}
-  else spriteImg.onload=()=>{setClickAreaHeight();updateHighlights();};
+  activeGem=gem;activeGemMode="current";
+  document.getElementById("gemModalTitle").textContent=GEM_INFO[gem].name+" の設定";
+  document.querySelectorAll("#gemModal .modeBtn").forEach(b=>b.classList.toggle("active",b.dataset.mode==="current"));
+  gemHlCur.style.display="none";gemHlTgt.style.display="none";gemHlHover.style.display="none";
+  gemSpriteImg.src=GEM_INFO[gem].img;
+  document.getElementById("gemModal").classList.add("show");
+  if(gemSpriteImg.complete&&gemSpriteImg.naturalHeight){setGemClickH();updateGemHighlights();}
+  else gemSpriteImg.onload=()=>{setGemClickH();updateGemHighlights();};
 }
-
-// ホバー
-document.getElementById("spriteWrap").addEventListener("pointermove",e=>{
-  const rect=spriteImg.getBoundingClientRect();
-  const y=e.clientY-rect.top;
-  if(y<0||y>spriteImg.offsetHeight){hlHover.style.display="none";return}
-  const{top,h}=lvToRect(yToLv(y));
-  hlHover.style.cssText=`display:block;top:${top}px;height:${h}px`;
+document.getElementById("gemSpriteWrap").addEventListener("pointermove",e=>{
+  const rect=gemSpriteImg.getBoundingClientRect();const y=e.clientY-rect.top;
+  if(y<0||y>gemSpriteImg.offsetHeight){gemHlHover.style.display="none";return}
+  const{top,h}=gemLvToRect(gemYToLv(y));
+  gemHlHover.style.cssText=`display:block;top:${top}px;height:${h}px`;
 });
-document.getElementById("spriteWrap").addEventListener("pointerleave",()=>hlHover.style.display="none");
-
-// 左半分タップ → set選択
-spriteLeft.addEventListener("pointerup",e=>{
-  const rect=spriteImg.getBoundingClientRect();
-  const lv=yToLv(e.clientY-rect.top);
-  openSetPop(lv);
+document.getElementById("gemSpriteWrap").addEventListener("pointerleave",()=>gemHlHover.style.display="none");
+gemSpriteLeft.addEventListener("pointerup",e=>{
+  const rect=gemSpriteImg.getBoundingClientRect();
+  openGemSetPop(gemYToLv(e.clientY-rect.top));
 });
-// 右半分タップ → 個数選択
-spriteRight.addEventListener("pointerup",e=>{
-  const rect=spriteImg.getBoundingClientRect();
-  const lv=yToLv(e.clientY-rect.top);
-  openCountPop(lv);
+gemSpriteRight.addEventListener("pointerup",e=>{
+  const rect=gemSpriteImg.getBoundingClientRect();
+  openGemCountPop(gemYToLv(e.clientY-rect.top));
 });
+document.querySelectorAll("#gemModal .modeBtn").forEach(btn=>btn.addEventListener("click",()=>{
+  activeGemMode=btn.dataset.mode;
+  document.querySelectorAll("#gemModal .modeBtn").forEach(b=>b.classList.toggle("active",b===btn));
+  updateGemHighlights();
+}));
+document.getElementById("closeGemModal").onclick=()=>document.getElementById("gemModal").classList.remove("show");
 
-function gemTotal(gem,mode){return state[gem][mode].reduce((s,v)=>s+v,0)}
-function allTotal(mode){return Object.keys(GEM_INFO).reduce((s,gem)=>s+gemTotal(gem,mode),0)}
-
-function openSetPop(lv){
-  pending={gem:activeGem,mode:activeMode,lv};
-  document.getElementById("popTitle").textContent=`Lv${lv}（${activeMode==="current"?"現在":"目標"}）一括設定`;
-  const grid=document.getElementById("popGrid");
-  const gridSet=document.getElementById("popGridSet");
+function openGemSetPop(lv){
+  pending={type:"gem",gem:activeGem,mode:activeGemMode,lv};
+  document.getElementById("popTitle").textContent=`Lv${lv}（${activeGemMode==="current"?"現在":"目標"}）一括設定`;
+  const grid=document.getElementById("popGrid");const gridSet=document.getElementById("popGridSet");
   grid.innerHTML="";gridSet.style.display="none";
-  const curQty=state[activeGem][activeMode][lv];
-  const usedOther=gemTotal(activeGem,activeMode)-curQty;
-  const totalUsedOther=allTotal(activeMode)-gemTotal(activeGem,activeMode);
+  const curQty=gemState[activeGem][activeGemMode][lv];
+  const usedOther=gemTotal(activeGem,activeGemMode)-curQty;
+  const totalUsedOther=gemAllTotal(activeGemMode)-gemTotal(activeGem,activeGemMode);
   const max=Math.min(6-usedOther,18-totalUsedOther-usedOther);
   [{label:"3set",qty:3},{label:"6set",qty:6}].forEach(({label,qty})=>{
     const b=document.createElement("button");
     const disabled=qty>max;
     b.className=curQty===qty?"popBtn main":"popBtn";
-    b.style.opacity=disabled?"0.35":"1";
-    b.disabled=disabled;
-    b.textContent=label;
-    b.onclick=()=>applyPop(qty);
-    grid.appendChild(b);
+    b.style.opacity=disabled?"0.35":"1";b.disabled=disabled;
+    b.textContent=label;b.onclick=()=>applyPop(qty);grid.appendChild(b);
   });
   document.getElementById("pop").classList.add("show");
 }
-
-function openCountPop(lv){
-  pending={gem:activeGem,mode:activeMode,lv};
-  document.getElementById("popTitle").textContent=`Lv${lv}（${activeMode==="current"?"現在":"目標"}）個数`;
-  const grid=document.getElementById("popGrid");
-  const gridSet=document.getElementById("popGridSet");
+function openGemCountPop(lv){
+  pending={type:"gem",gem:activeGem,mode:activeGemMode,lv};
+  document.getElementById("popTitle").textContent=`Lv${lv}（${activeGemMode==="current"?"現在":"目標"}）個数`;
+  const grid=document.getElementById("popGrid");const gridSet=document.getElementById("popGridSet");
   grid.innerHTML="";gridSet.innerHTML="";gridSet.style.display="grid";
-  const curQty=state[activeGem][activeMode][lv];
-  const usedOther=gemTotal(activeGem,activeMode)-curQty;
-  const totalUsedOther=allTotal(activeMode)-gemTotal(activeGem,activeMode);
+  const curQty=gemState[activeGem][activeGemMode][lv];
+  const usedOther=gemTotal(activeGem,activeGemMode)-curQty;
+  const totalUsedOther=gemAllTotal(activeGemMode)-gemTotal(activeGem,activeGemMode);
   const max=Math.min(6-usedOther,18-totalUsedOther-usedOther);
   for(let i=0;i<=6;i++){
-    const b=document.createElement("button");
-    const disabled=i>max;
+    const b=document.createElement("button");const disabled=i>max;
     b.className=curQty===i?"popBtn main":"popBtn";
-    b.style.opacity=disabled?"0.35":"1";
-    b.disabled=disabled;
-    b.textContent=i+"個";
-    b.onclick=()=>applyPop(i);
-    grid.appendChild(b);
+    b.style.opacity=disabled?"0.35":"1";b.disabled=disabled;
+    b.textContent=i+"個";b.onclick=()=>applyPop(i);grid.appendChild(b);
   }
   [{label:"3set",qty:3},{label:"6set",qty:6}].forEach(({label,qty})=>{
-    const b=document.createElement("button");
-    const disabled=qty>max;
+    const b=document.createElement("button");const disabled=qty>max;
     b.className=curQty===qty?"popBtn main":"popBtn";
-    b.style.opacity=disabled?"0.35":"1";
-    b.disabled=disabled;
-    b.textContent=label;
-    b.onclick=()=>applyPop(qty);
-    gridSet.appendChild(b);
+    b.style.opacity=disabled?"0.35":"1";b.disabled=disabled;
+    b.textContent=label;b.onclick=()=>applyPop(qty);gridSet.appendChild(b);
   });
   document.getElementById("pop").classList.add("show");
 }
 
-function applyPop(qty){
-  // 他のLvの設定を消さずに該当Lvだけ更新
-  state[pending.gem][pending.mode][pending.lv]=qty;
-  document.getElementById("pop").classList.remove("show");
-  render();
+// ===== 装備 =====
+const GEAR_SLOT_NAMES=["部位1","部位2","部位3","部位4","部位5","部位6"];
+
+function renderGearSlots(){
+  const container=document.getElementById("gearSlots");
+  container.innerHTML="";
+  for(let i=0;i<6;i++){
+    const cur=gearState.current[i];const tgt=gearState.target[i];
+    const div=document.createElement("div");
+    div.className="gearSlot"+(cur!==null||tgt!==null?" hasData":"");
+    div.innerHTML=`<strong>スロット${i+1}</strong>現在：${cur!==null?GEAR_LV_NAMES[cur]:"未設定"}<br>目標：${tgt!==null?GEAR_LV_NAMES[tgt]:"未設定"}`;
+    div.onclick=()=>openGearModal(i);
+    container.appendChild(div);
+  }
 }
 
+function gearCalcAll(){
+  const need={alloy:0,polish:0,plan:0,amber:0};
+  for(let i=0;i<6;i++){
+    const from=gearState.current[i],to=gearState.target[i];
+    if(from===null||to===null||to<=from)continue;
+    for(let lv=from;lv<to;lv++){
+      const r=GEAR_COSTS[lv]||{};
+      need.alloy+=r.alloy||0;need.polish+=r.polish||0;need.plan+=r.plan||0;need.amber+=r.amber||0;
+    }
+  }
+  return need;
+}
+
+function renderGear(){
+  renderGearSlots();
+  const need=gearCalcAll();
+  document.getElementById("needAlloy").textContent=fmt(need.alloy);
+  document.getElementById("needPolish").textContent=fmt(need.polish);
+  document.getElementById("needPlanG").textContent=fmt(need.plan);
+  document.getElementById("needAmber").textContent=fmt(need.amber);
+  document.getElementById("lackAlloy").textContent=fmt(Math.max(0,need.alloy-Number(document.getElementById("haveAlloy").value||0)));
+  document.getElementById("lackPolish").textContent=fmt(Math.max(0,need.polish-Number(document.getElementById("havePolish").value||0)));
+  document.getElementById("lackPlanG").textContent=fmt(Math.max(0,need.plan-Number(document.getElementById("havePlanG").value||0)));
+  document.getElementById("lackAmber").textContent=fmt(Math.max(0,need.amber-Number(document.getElementById("haveAmber").value||0)));
+  if(document.getElementById("gearModal").classList.contains("show"))updateGearHighlights();
+}
+
+// 装備モーダル
+const gearSpriteImg=document.getElementById("gearSpriteImg");
+const gearHlCur=document.getElementById("gearHlCur");
+const gearHlTgt=document.getElementById("gearHlTgt");
+const gearHlHover=document.getElementById("gearHlHover");
+const gearSpriteLeft=document.getElementById("gearSpriteLeft");
+const gearSpriteRight=document.getElementById("gearSpriteRight");
+
+function gearRowH(){return gearSpriteImg.offsetHeight/GEAR_ROWS}
+function gearYToLv(y){return Math.min(GEAR_ROWS-1,Math.max(0,Math.floor(y/gearRowH())))}
+function gearLvToRect(lv){const h=gearRowH();return{top:lv*h,h}}
+
+function updateGearHighlights(){
+  const imgH=gearSpriteImg.offsetHeight;if(!imgH)return;
+  const cur=gearState.current[activeGearSlot];
+  const tgt=gearState.target[activeGearSlot];
+  if(cur!==null){const{top,h}=gearLvToRect(cur);gearHlCur.style.cssText=`display:block;top:${top}px;height:${h}px`}else gearHlCur.style.display="none";
+  if(tgt!==null){const{top,h}=gearLvToRect(tgt);gearHlTgt.style.cssText=`display:block;top:${top}px;height:${h}px`}else gearHlTgt.style.display="none";
+}
+function setGearClickH(){const h=gearSpriteImg.offsetHeight;gearSpriteLeft.style.height=h+"px";gearSpriteRight.style.height=h+"px";}
+
+function openGearModal(slot){
+  activeGearSlot=slot;activeGearMode="current";
+  document.getElementById("gearModalTitle").textContent=`スロット${slot+1} の設定`;
+  document.querySelectorAll(".gearModeBtn").forEach(b=>b.classList.toggle("active",b.dataset.mode==="current"));
+  gearHlCur.style.display="none";gearHlTgt.style.display="none";gearHlHover.style.display="none";
+  document.getElementById("gearModal").classList.add("show");
+  if(gearSpriteImg.complete&&gearSpriteImg.naturalHeight){setGearClickH();updateGearHighlights();}
+  else gearSpriteImg.onload=()=>{setGearClickH();updateGearHighlights();};
+}
+
+document.getElementById("gearSpriteWrap").addEventListener("pointermove",e=>{
+  const rect=gearSpriteImg.getBoundingClientRect();const y=e.clientY-rect.top;
+  if(y<0||y>gearSpriteImg.offsetHeight){gearHlHover.style.display="none";return}
+  const{top,h}=gearLvToRect(gearYToLv(y));
+  gearHlHover.style.cssText=`display:block;top:${top}px;height:${h}px`;
+});
+document.getElementById("gearSpriteWrap").addEventListener("pointerleave",()=>gearHlHover.style.display="none");
+
+// 装備は左右どちらもLv選択（個数は不要、1スロット=1部位）
+gearSpriteLeft.addEventListener("pointerup",e=>{
+  const rect=gearSpriteImg.getBoundingClientRect();
+  openGearLvPop(gearYToLv(e.clientY-rect.top));
+});
+gearSpriteRight.addEventListener("pointerup",e=>{
+  const rect=gearSpriteImg.getBoundingClientRect();
+  openGearLvPop(gearYToLv(e.clientY-rect.top));
+});
+
+document.querySelectorAll(".gearModeBtn").forEach(btn=>btn.addEventListener("click",()=>{
+  activeGearMode=btn.dataset.mode;
+  document.querySelectorAll(".gearModeBtn").forEach(b=>b.classList.toggle("active",b===btn));
+  updateGearHighlights();
+}));
+document.getElementById("closeGearModal").onclick=()=>document.getElementById("gearModal").classList.remove("show");
+
+function openGearLvPop(lv){
+  pending={type:"gear",slot:activeGearSlot,mode:activeGearMode};
+  document.getElementById("popTitle").textContent=`スロット${activeGearSlot+1}（${activeGearMode==="current"?"現在":"目標"}）: ${GEAR_LV_NAMES[lv]}`;
+  const grid=document.getElementById("popGrid");const gridSet=document.getElementById("popGridSet");
+  grid.innerHTML="";gridSet.style.display="none";
+  // 確定ボタンのみ
+  const b=document.createElement("button");
+  b.className="popBtn main";b.style.gridColumn="1/-1";
+  b.textContent="このレベルに設定";
+  b.onclick=()=>{
+    gearState[pending.mode][pending.slot]=lv;
+    document.getElementById("pop").classList.remove("show");
+    renderGear();updateGearHighlights();
+  };
+  grid.appendChild(b);
+  // クリアボタン
+  const bc=document.createElement("button");
+  bc.className="popBtn";bc.style.gridColumn="1/-1";
+  bc.textContent="クリア";
+  bc.onclick=()=>{
+    gearState[pending.mode][pending.slot]=null;
+    document.getElementById("pop").classList.remove("show");
+    renderGear();updateGearHighlights();
+  };
+  grid.appendChild(bc);
+  document.getElementById("pop").classList.add("show");
+}
+
+// ポップ共通apply
+function applyPop(qty){
+  if(pending.type==="gem"){
+    gemState[pending.gem][pending.mode][pending.lv]=qty;
+  }
+  document.getElementById("pop").classList.remove("show");
+  renderGem();
+}
+
+// 宝石一括適用
 function applyAll(){
   const c=Number(document.getElementById("bulkCurrent").value),t=Number(document.getElementById("bulkTarget").value);
-  for(const gem of Object.keys(state)){
-    state[gem].current=Array(17).fill(0);state[gem].target=Array(17).fill(0);
-    state[gem].current[c]=6;state[gem].target[t]=6;
+  for(const gem of Object.keys(gemState)){
+    gemState[gem].current=Array(17).fill(0);gemState[gem].target=Array(17).fill(0);
+    gemState[gem].current[c]=6;gemState[gem].target[t]=6;
   }
-  render();
-}
-function resetAll(){
-  for(const gem of Object.keys(state)){state[gem].current=Array(17).fill(0);state[gem].target=Array(17).fill(0)}
-  render();
+  renderGem();
 }
 
 document.querySelectorAll(".gemHot").forEach(btn=>btn.addEventListener("click",()=>openGem(btn.dataset.type)));
-document.querySelectorAll(".modeBtn").forEach(btn=>btn.addEventListener("click",()=>{
-  activeMode=btn.dataset.mode;
-  document.querySelectorAll(".modeBtn").forEach(b=>b.classList.toggle("active",b===btn));
-  updateHighlights();
-}));
-document.getElementById("closeModal").onclick=()=>document.getElementById("modalOverlay").classList.remove("show");
-document.getElementById("popClose").onclick=()=>document.getElementById("pop").classList.remove("show");
+document.getElementById("gearStage").addEventListener("click",()=>openGearModal(0));
+// スロットクリック
+document.getElementById("resetGem").onclick=()=>{for(const gem of Object.keys(gemState)){gemState[gem].current=Array(17).fill(0);gemState[gem].target=Array(17).fill(0)}renderGem()};
+document.getElementById("resetGear").onclick=()=>{gearState.current=Array(6).fill(null);gearState.target=Array(6).fill(null);renderGear()};
 document.getElementById("applyAll").onclick=applyAll;
-document.getElementById("resetAll").onclick=resetAll;
-["havePlan","haveBook","haveSecret"].forEach(id=>document.getElementById(id).addEventListener("input",render));
+document.getElementById("popClose").onclick=()=>document.getElementById("pop").classList.remove("show");
+["havePlan","haveBook","haveSecret"].forEach(id=>document.getElementById(id).addEventListener("input",renderGem));
+["haveAlloy","havePolish","havePlanG","haveAmber"].forEach(id=>document.getElementById(id).addEventListener("input",renderGear));
+
 fillSelects();
-render();
+renderGem();
+renderGear();
 </script>
 </body>
 </html>
