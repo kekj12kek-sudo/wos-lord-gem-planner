@@ -21,6 +21,7 @@ body{margin:0;color:var(--text);font-family:system-ui,sans-serif;background:line
 select,input{width:100%;border:1px solid #8bd8ff66;background:#071d31;color:#fff;border-radius:12px;padding:12px;font-size:16px;font-weight:900;outline:none}
 .bulkBtn{width:100%;border:1px solid #8bd8ff66;background:#12446f;color:#fff;border-radius:14px;padding:12px;font-size:16px;font-weight:1000;cursor:pointer}
 .help{font-size:12px;color:#d8f1ff;margin-top:8px}
+.matIcon{width:28px;height:28px;object-fit:contain;vertical-align:middle;margin-right:4px}
 .reset{width:100%;border:1px solid #ffbd5c88;background:linear-gradient(#ffcc64,#e8941d);color:#231200;border-radius:16px;padding:12px;font-size:16px;font-weight:1000;margin-top:12px;cursor:pointer}
 .totalBox{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .resultItem{background:#09243b;border:1px solid #7bd3ff33;border-radius:14px;padding:10px}
@@ -128,23 +129,23 @@ select,input{width:100%;border:1px solid #8bd8ff66;background:#071d31;color:#fff
     <div class="card">
       <div class="cardTitle">所持素材</div>
       <div class="levelBox">
-        <div class="field"><label>宝石図面</label><input id="havePlan" type="number" min="0" value="0"></div>
-        <div class="field"><label>宝石ハンドブック</label><input id="haveBook" type="number" min="0" value="0"></div>
-        <div class="field"><label>宝石秘典</label><input id="haveSecret" type="number" min="0" value="0"></div>
+        <div class="field"><label><img src="mat_gem_plan.png" class="matIcon"> 宝石図面</label><input id="havePlan" type="number" min="0" value="0"></div>
+        <div class="field"><label><img src="mat_gem_book.png" class="matIcon"> 宝石ハンドブック</label><input id="haveBook" type="number" min="0" value="0"></div>
+        <div class="field"><label><img src="mat_gem_secret.png" class="matIcon"> 宝石秘典</label><input id="haveSecret" type="number" min="0" value="0"></div>
       </div>
     </div>
     <div class="card">
       <div class="cardTitle">必要素材</div>
       <div class="totalBox">
-        <div class="resultItem"><div class="resultLabel">宝石図面</div><div class="resultValue" id="needPlan">0</div></div>
-        <div class="resultItem"><div class="resultLabel">宝石ハンドブック</div><div class="resultValue" id="needBook">0</div></div>
-        <div class="resultItem"><div class="resultLabel">宝石秘典</div><div class="resultValue" id="needSecret">0</div></div>
+        <div class="resultItem"><div class="resultLabel"><img src="mat_gem_plan.png" class="matIcon"> 宝石図面</div><div class="resultValue" id="needPlan">0</div></div>
+        <div class="resultItem"><div class="resultLabel"><img src="mat_gem_book.png" class="matIcon"> 宝石ハンドブック</div><div class="resultValue" id="needBook">0</div></div>
+        <div class="resultItem"><div class="resultLabel"><img src="mat_gem_secret.png" class="matIcon"> 宝石秘典</div><div class="resultValue" id="needSecret">0</div></div>
       </div>
       <div class="cardTitle" style="margin-top:14px">不足素材</div>
       <div class="totalBox">
-        <div class="resultItem lack"><div class="resultLabel">宝石図面</div><div class="resultValue" id="lackPlan">0</div></div>
-        <div class="resultItem lack"><div class="resultLabel">宝石ハンドブック</div><div class="resultValue" id="lackBook">0</div></div>
-        <div class="resultItem lack"><div class="resultLabel">宝石秘典</div><div class="resultValue" id="lackSecret">0</div></div>
+        <div class="resultItem lack"><div class="resultLabel"><img src="mat_gem_plan.png" class="matIcon"> 宝石図面</div><div class="resultValue" id="lackPlan">0</div></div>
+        <div class="resultItem lack"><div class="resultLabel"><img src="mat_gem_book.png" class="matIcon"> 宝石ハンドブック</div><div class="resultValue" id="lackBook">0</div></div>
+        <div class="resultItem lack"><div class="resultLabel"><img src="mat_gem_secret.png" class="matIcon"> 宝石秘典</div><div class="resultValue" id="lackSecret">0</div></div>
       </div>
       <button class="reset" id="resetGem">設定をリセット</button>
     </div>
@@ -169,26 +170,26 @@ select,input{width:100%;border:1px solid #8bd8ff66;background:#071d31;color:#fff
     <div class="card">
       <div class="cardTitle">所持素材</div>
       <div class="levelBox">
-        <div class="field"><label>合金</label><input id="haveAlloy" type="number" min="0" value="0"></div>
-        <div class="field"><label>研磨剤</label><input id="havePolish" type="number" min="0" value="0"></div>
-        <div class="field"><label>設計図</label><input id="havePlanG" type="number" min="0" value="0"></div>
-        <div class="field"><label>琥珀</label><input id="haveAmber" type="number" min="0" value="0"></div>
+        <div class="field"><label><img src="mat_alloy.png" class="matIcon"> 合金</label><input id="haveAlloy" type="number" min="0" value="0"></div>
+        <div class="field"><label><img src="mat_polish.png" class="matIcon"> 研磨剤</label><input id="havePolish" type="number" min="0" value="0"></div>
+        <div class="field"><label><img src="mat_plan.png" class="matIcon"> 設計図面</label><input id="havePlanG" type="number" min="0" value="0"></div>
+        <div class="field"><label><img src="mat_amber.png" class="matIcon"> 琥珀</label><input id="haveAmber" type="number" min="0" value="0"></div>
       </div>
     </div>
     <div class="card">
       <div class="cardTitle">必要素材</div>
       <div class="totalBox" style="grid-template-columns:repeat(2,1fr)">
-        <div class="resultItem"><div class="resultLabel">合金</div><div class="resultValue" id="needAlloy">0</div></div>
-        <div class="resultItem"><div class="resultLabel">研磨剤</div><div class="resultValue" id="needPolish">0</div></div>
-        <div class="resultItem"><div class="resultLabel">設計図</div><div class="resultValue" id="needPlanG">0</div></div>
-        <div class="resultItem"><div class="resultLabel">琥珀</div><div class="resultValue" id="needAmber">0</div></div>
+        <div class="resultItem"><div class="resultLabel"><img src="mat_alloy.png" class="matIcon"> 合金</div><div class="resultValue" id="needAlloy">0</div></div>
+        <div class="resultItem"><div class="resultLabel"><img src="mat_polish.png" class="matIcon"> 研磨剤</div><div class="resultValue" id="needPolish">0</div></div>
+        <div class="resultItem"><div class="resultLabel"><img src="mat_plan.png" class="matIcon"> 設計図面</div><div class="resultValue" id="needPlanG">0</div></div>
+        <div class="resultItem"><div class="resultLabel"><img src="mat_amber.png" class="matIcon"> 琥珀</div><div class="resultValue" id="needAmber">0</div></div>
       </div>
       <div class="cardTitle" style="margin-top:14px">不足素材</div>
       <div class="totalBox" style="grid-template-columns:repeat(2,1fr)">
-        <div class="resultItem lack"><div class="resultLabel">合金</div><div class="resultValue" id="lackAlloy">0</div></div>
-        <div class="resultItem lack"><div class="resultLabel">研磨剤</div><div class="resultValue" id="lackPolish">0</div></div>
-        <div class="resultItem lack"><div class="resultLabel">設計図</div><div class="resultValue" id="lackPlanG">0</div></div>
-        <div class="resultItem lack"><div class="resultLabel">琥珀</div><div class="resultValue" id="lackAmber">0</div></div>
+        <div class="resultItem lack"><div class="resultLabel"><img src="mat_alloy.png" class="matIcon"> 合金</div><div class="resultValue" id="lackAlloy">0</div></div>
+        <div class="resultItem lack"><div class="resultLabel"><img src="mat_polish.png" class="matIcon"> 研磨剤</div><div class="resultValue" id="lackPolish">0</div></div>
+        <div class="resultItem lack"><div class="resultLabel"><img src="mat_plan.png" class="matIcon"> 設計図面</div><div class="resultValue" id="lackPlanG">0</div></div>
+        <div class="resultItem lack"><div class="resultLabel"><img src="mat_amber.png" class="matIcon"> 琥珀</div><div class="resultValue" id="lackAmber">0</div></div>
       </div>
       <button class="reset" id="resetGear">設定をリセット</button>
     </div>
