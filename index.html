@@ -150,13 +150,11 @@ select,input{width:100%;border:1px solid #8bd8ff66;background:#071d31;color:#fff
   <!-- ===== 装備タブ ===== -->
   <div class="tabContent" id="tab-gear">
     <div class="card">
-      <div class="help">中央の装備をタップ → 各スロットの現在/目標レベルを設定</div>
+      <div class="help">スロット一覧をタップして現在/目標レベルを設定</div>
     </div>
-    <!-- 装備ステージ: 背景画像 + 中央タップボタン -->
+    <!-- 装備ステージ: 背景画像 + 中央タップ -->
     <div class="gearStage" id="gearStage">
-      <button class="gearHot" data-slot="0" style="left:50%;top:48%">
-        <span class="badge" id="gbadge-0">未設定</span>
-      </button>
+      <button class="gearHot" style="left:50%;top:48%;pointer-events:none;opacity:0"></button>
     </div>
     <!-- スロット一覧 -->
     <div class="gearSlots" id="gearSlots"></div>
@@ -278,10 +276,9 @@ const GEAR_COSTS=[
   {alloy:180000,polish:1950,plan:325,amber:40},
 ];
 const GEAR_ROWS=21;
-// スロット6個: current/target各Lv(0-20)
 const gearState={
-  current:Array(6).fill(null), // null=未設定, 0-20=レベル
-  target:Array(6).fill(null)
+  current:Array(21).fill(0),
+  target:Array(21).fill(0)
 };
 
 // ===== 宝石state =====
@@ -439,24 +436,29 @@ function openGemCountPop(lv){
 // ===== 装備 =====
 const GEAR_SLOT_NAMES=["部位1","部位2","部位3","部位4","部位5","部位6"];
 
+function gearTotal(mode){return gearState[mode].reduce((s,v)=>s+v,0)}
+function gearSummarize(a){const p=[];for(let i=0;i<21;i++)if(a[i])p.push(`${GEAR_LV_NAMES[i]}×${a[i]}`);return p.length?p.join(" / "):"未設定"}
+
 function renderGearSlots(){
   const container=document.getElementById("gearSlots");
   container.innerHTML="";
-  for(let i=0;i<6;i++){
-    const cur=gearState.current[i];const tgt=gearState.target[i];
-    const div=document.createElement("div");
-    div.className="gearSlot"+(cur!==null||tgt!==null?" hasData":"");
-    div.innerHTML=`<strong>スロット${i+1}</strong>現在：${cur!==null?GEAR_LV_NAMES[cur]:"未設定"}<br>目標：${tgt!==null?GEAR_LV_NAMES[tgt]:"未設定"}`;
-    div.onclick=()=>openGearModal(i);
-    container.appendChild(div);
-  }
+  const ct=gearTotal("current"),tt=gearTotal("target");
+  const div=document.createElement("div");
+  div.className="gearSlot"+(ct>0||tt>0?" hasData":"");
+  div.innerHTML=`<strong>装備設定</strong>現在：${gearSummarize(gearState.current)}<br>目標：${gearSummarize(gearState.target)}<br>設定：現在${ct}部位 / 目標${tt}部位`;
+  container.appendChild(div);
 }
 
 function gearCalcAll(){
   const need={alloy:0,polish:0,plan:0,amber:0};
-  for(let i=0;i<6;i++){
-    const from=gearState.current[i],to=gearState.target[i];
-    if(from===null||to===null||to<=from)continue;
+  const cur=[],tar=[];
+  for(let lv=0;lv<21;lv++){
+    for(let i=0;i<gearState.current[lv];i++)cur.push(lv);
+    for(let i=0;i<gearState.target[lv];i++)tar.push(lv);
+  }
+  for(let i=0;i<Math.min(cur.length,tar.length);i++){
+    const from=cur[i],to=tar[i];
+    if(to<=from)continue;
     for(let lv=from;lv<to;lv++){
       const r=GEAR_COSTS[lv]||{};
       need.alloy+=r.alloy||0;need.polish+=r.polish||0;need.plan+=r.plan||0;need.amber+=r.amber||0;
@@ -493,16 +495,16 @@ function gearLvToRect(lv){const h=gearRowH();return{top:lv*h,h}}
 
 function updateGearHighlights(){
   const imgH=gearSpriteImg.offsetHeight;if(!imgH)return;
-  const cur=gearState.current[activeGearSlot];
-  const tgt=gearState.target[activeGearSlot];
-  if(cur!==null){const{top,h}=gearLvToRect(cur);gearHlCur.style.cssText=`display:block;top:${top}px;height:${h}px`}else gearHlCur.style.display="none";
-  if(tgt!==null){const{top,h}=gearLvToRect(tgt);gearHlTgt.style.cssText=`display:block;top:${top}px;height:${h}px`}else gearHlTgt.style.display="none";
+  const curLv=gearState.current.findIndex(v=>v>0);
+  const tgtLv=gearState.target.findIndex(v=>v>0);
+  if(curLv>=0){const{top,h}=gearLvToRect(curLv);gearHlCur.style.cssText=`display:block;top:${top}px;height:${h}px`}else gearHlCur.style.display="none";
+  if(tgtLv>=0){const{top,h}=gearLvToRect(tgtLv);gearHlTgt.style.cssText=`display:block;top:${top}px;height:${h}px`}else gearHlTgt.style.display="none";
 }
 function setGearClickH(){const h=gearSpriteImg.offsetHeight;gearSpriteLeft.style.height=h+"px";gearSpriteRight.style.height=h+"px";}
 
-function openGearModal(slot){
-  activeGearSlot=slot;activeGearMode="current";
-  document.getElementById("gearModalTitle").textContent=`スロット${slot+1} の設定`;
+function openGearModal(){
+  activeGearMode="current";
+  document.getElementById("gearModalTitle").textContent="装備の設定";
   document.querySelectorAll(".gearModeBtn").forEach(b=>b.classList.toggle("active",b.dataset.mode==="current"));
   gearHlCur.style.display="none";gearHlTgt.style.display="none";gearHlHover.style.display="none";
   document.getElementById("gearModal").classList.add("show");
@@ -536,30 +538,26 @@ document.querySelectorAll(".gearModeBtn").forEach(btn=>btn.addEventListener("cli
 document.getElementById("closeGearModal").onclick=()=>document.getElementById("gearModal").classList.remove("show");
 
 function openGearLvPop(lv){
-  pending={type:"gear",slot:activeGearSlot,mode:activeGearMode};
-  document.getElementById("popTitle").textContent=`スロット${activeGearSlot+1}（${activeGearMode==="current"?"現在":"目標"}）: ${GEAR_LV_NAMES[lv]}`;
+  pending={type:"gear",mode:activeGearMode,lv};
+  document.getElementById("popTitle").textContent=`${GEAR_LV_NAMES[lv]}（${activeGearMode==="current"?"現在":"目標"}）個数`;
   const grid=document.getElementById("popGrid");const gridSet=document.getElementById("popGridSet");
   grid.innerHTML="";gridSet.style.display="none";
-  // 確定ボタンのみ
-  const b=document.createElement("button");
-  b.className="popBtn main";b.style.gridColumn="1/-1";
-  b.textContent="このレベルに設定";
-  b.onclick=()=>{
-    gearState[pending.mode][pending.slot]=lv;
-    document.getElementById("pop").classList.remove("show");
-    renderGear();updateGearHighlights();
-  };
-  grid.appendChild(b);
-  // クリアボタン
-  const bc=document.createElement("button");
-  bc.className="popBtn";bc.style.gridColumn="1/-1";
-  bc.textContent="クリア";
-  bc.onclick=()=>{
-    gearState[pending.mode][pending.slot]=null;
-    document.getElementById("pop").classList.remove("show");
-    renderGear();updateGearHighlights();
-  };
-  grid.appendChild(bc);
+  const curQty=gearState[activeGearMode][lv];
+  const usedOther=gearTotal(activeGearMode)-curQty;
+  const max=6-usedOther;
+  for(let i=0;i<=6;i++){
+    const b=document.createElement("button");
+    const disabled=i>max;
+    b.className=curQty===i?"popBtn main":"popBtn";
+    b.style.opacity=disabled?"0.35":"1";b.disabled=disabled;
+    b.textContent=i+"部位";
+    b.onclick=()=>{
+      gearState[pending.mode][pending.lv]=i;
+      document.getElementById("pop").classList.remove("show");
+      renderGear();updateGearHighlights();
+    };
+    grid.appendChild(b);
+  }
   document.getElementById("pop").classList.add("show");
 }
 
@@ -583,10 +581,10 @@ function applyAll(){
 }
 
 document.querySelectorAll(".gemHot").forEach(btn=>btn.addEventListener("click",()=>openGem(btn.dataset.type)));
-document.getElementById("gearStage").addEventListener("click",()=>openGearModal(0));
+document.getElementById("gearStage").addEventListener("click",openGearModal);
 // スロットクリック
 document.getElementById("resetGem").onclick=()=>{for(const gem of Object.keys(gemState)){gemState[gem].current=Array(17).fill(0);gemState[gem].target=Array(17).fill(0)}renderGem()};
-document.getElementById("resetGear").onclick=()=>{gearState.current=Array(6).fill(null);gearState.target=Array(6).fill(null);renderGear()};
+document.getElementById("resetGear").onclick=()=>{gearState.current=Array(21).fill(0);gearState.target=Array(21).fill(0);renderGear()};
 document.getElementById("applyAll").onclick=applyAll;
 document.getElementById("popClose").onclick=()=>document.getElementById("pop").classList.remove("show");
 ["havePlan","haveBook","haveSecret"].forEach(id=>document.getElementById(id).addEventListener("input",renderGem));
