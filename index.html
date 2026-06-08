@@ -37,9 +37,9 @@ select,input{width:100%;border:1px solid #8bd8ff66;background:#071d31;color:#fff
 .gemHot{position:absolute;width:14%;aspect-ratio:1;border:0;padding:0;background:radial-gradient(circle,#ffffff18,transparent 70%);transform:translate(-50%,-50%);cursor:pointer;z-index:10;border-radius:50%;animation:tapPulse 2s ease-in-out infinite}
 .gemHot:active{transform:translate(-50%,-50%) scale(0.85)!important}
 .badge{position:absolute;right:-8px;top:-5px;min-width:28px;height:22px;display:grid;place-items:center;padding:0 4px;background:linear-gradient(#ff6d78,#d82337);border:2px solid #fff;border-radius:999px;color:#fff;font-size:11px;line-height:1;pointer-events:none}
-.gemHot[data-type="shield"]{left:50%;top:25%}
-.gemHot[data-type="lancer"]{left:33%;top:62%}
-.gemHot[data-type="marks"]{left:67%;top:62%}
+.gemHot[data-type="shield"]{left:50%;top:30%}
+.gemHot[data-type="lancer"]{left:35%;top:63%}
+.gemHot[data-type="marks"]{left:65%;top:63%}
 @keyframes tapPulse{0%,100%{box-shadow:0 0 0 0 #ffffff44}60%{box-shadow:0 0 0 12px #ffffff00}}
 .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
 .gemSummary{background:#09243b;border:1px solid #7bd3ff44;border-radius:16px;padding:10px;text-align:center;font-size:13px}
@@ -153,7 +153,12 @@ select,input{width:100%;border:1px solid #8bd8ff66;background:#071d31;color:#fff
   <!-- ===== 装備タブ ===== -->
   <div class="tabContent" id="tab-gear">
     <div class="card">
-      <div class="help">スロット一覧をタップして現在/目標レベルを設定</div>
+      <div class="levelBox">
+        <div class="field"><label>現在レベル</label><select id="gearBulkCurrent"></select></div>
+        <div class="field"><label>目標レベル</label><select id="gearBulkTarget"></select></div>
+      </div>
+      <button class="bulkBtn" id="gearApplyAll">全装備に一括適用（6部位）</button>
+      <div class="help">中央の装備タップ＝個別設定 / 緑＝現在レベル / 橙＝目標レベル</div>
     </div>
     <!-- 装備ステージ: 背景画像 + 中央タップのみ -->
     <div class="gearStage" id="gearStage">
@@ -439,7 +444,19 @@ function openGemCountPop(lv){
 // ===== 装備 =====
 const GEAR_SLOT_NAMES=["部位1","部位2","部位3","部位4","部位5","部位6"];
 
-function gearTotal(mode){return gearState[mode].reduce((s,v)=>s+v,0)}
+function fillGearSelects(){
+  const c=document.getElementById("gearBulkCurrent"),t=document.getElementById("gearBulkTarget");
+  GEAR_LV_NAMES.forEach((name,i)=>{c.add(new Option(name,i));if(i>0)t.add(new Option(name,i))});
+  c.value=0;t.value=20;
+}
+
+function gearApplyAll(){
+  const c=Number(document.getElementById("gearBulkCurrent").value);
+  const t=Number(document.getElementById("gearBulkTarget").value);
+  gearState.current=Array(21).fill(0);gearState.target=Array(21).fill(0);
+  gearState.current[c]=6;gearState.target[t]=6;
+  renderGear();
+}
 function gearSummarize(a){const p=[];for(let i=0;i<21;i++)if(a[i])p.push(`${GEAR_LV_NAMES[i]}×${a[i]}`);return p.length?p.join(" / "):"未設定"}
 
 function renderGearSlots(){
@@ -598,7 +615,9 @@ document.getElementById("popClose").onclick=()=>document.getElementById("pop").c
 ["havePlan","haveBook","haveSecret"].forEach(id=>document.getElementById(id).addEventListener("input",renderGem));
 ["haveAlloy","havePolish","havePlanG","haveAmber"].forEach(id=>document.getElementById(id).addEventListener("input",renderGear));
 
+document.getElementById("gearApplyAll").onclick=gearApplyAll;
 fillSelects();
+fillGearSelects();
 renderGem();
 renderGear();
 </script>
