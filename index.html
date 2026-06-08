@@ -71,7 +71,7 @@ select,input{width:100%;border:1px solid #8bd8ff66;background:#071d31;color:#fff
 
 /* スプライットモーダル共通 */
 .spriteScroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:8px 16px 16px;display:flex;justify-content:center}
-.spriteWrap{position:relative;width:180px;flex-shrink:0;align-self:flex-start}
+.spriteWrap{position:relative;width:160px;flex-shrink:0;align-self:flex-start;background:#09243b;border:1px solid #7bd3ff33;border-radius:12px;overflow:hidden}
 .spriteWrap img{display:block;width:100%;height:auto;pointer-events:none}
 .hlBar{position:absolute;left:0;right:0;pointer-events:none;border-radius:4px}
 .hlBar.cur{background:#4af07a33;border:2px solid #4af07aaa}
@@ -227,8 +227,8 @@ select,input{width:100%;border:1px solid #8bd8ff66;background:#071d31;color:#fff
       <button class="closeBtn" id="closeGearModal">閉じる</button>
     </div>
     <div class="modalTabs">
-      <button class="gearModeBtn active" data-mode="current">現在レベル</button>
-      <button class="gearModeBtn" data-mode="target">目標レベル</button>
+      <button class="modeBtn gearModeBtn active" data-mode="current">現在レベル</button>
+      <button class="modeBtn gearModeBtn" data-mode="target">目標レベル</button>
     </div>
     <div class="spriteScroll">
       <div class="spriteWrap" id="gearSpriteWrap">
@@ -365,7 +365,18 @@ function updateGemHighlights(){
   if(curLv>0){const{top,h}=gemLvToRect(curLv);gemHlCur.style.cssText=`display:block;top:${top}px;height:${h}px`}else gemHlCur.style.display="none";
   if(tgtLv>0){const{top,h}=gemLvToRect(tgtLv);gemHlTgt.style.cssText=`display:block;top:${top}px;height:${h}px`}else gemHlTgt.style.display="none";
 }
-function setGemClickH(){const h=gemSpriteImg.offsetHeight;gemSpriteLeft.style.height=h+"px";gemSpriteRight.style.height=h+"px";}
+function setGemClickH(){
+  const trySet=()=>{
+    const h=gemSpriteImg.offsetHeight;
+    if(h>0){
+      gemSpriteLeft.style.height=h+"px";
+      gemSpriteRight.style.height=h+"px";
+    } else {
+      requestAnimationFrame(trySet);
+    }
+  };
+  requestAnimationFrame(trySet);
+}
 
 function openGem(gem){
   activeGem=gem;activeGemMode="current";
@@ -525,11 +536,16 @@ function updateGearHighlights(){
   if(tgtLv>=0){const{top,h}=gearLvToRect(tgtLv);gearHlTgt.style.cssText=`display:block;top:${top}px;height:${h}px`}else gearHlTgt.style.display="none";
 }
 function setGearClickH(){
-  requestAnimationFrame(()=>{
+  const trySet=()=>{
     const h=gearSpriteImg.offsetHeight;
-    gearSpriteLeft.style.height=h+"px";
-    gearSpriteRight.style.height=h+"px";
-  });
+    if(h>0){
+      gearSpriteLeft.style.height=h+"px";
+      gearSpriteRight.style.height=h+"px";
+    } else {
+      requestAnimationFrame(trySet);
+    }
+  };
+  requestAnimationFrame(trySet);
 }
 
 function openGearModal(){
