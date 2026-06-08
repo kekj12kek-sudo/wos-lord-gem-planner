@@ -395,11 +395,11 @@ document.getElementById("gemSpriteWrap").addEventListener("pointermove",e=>{
   gemHlHover.style.cssText=`display:block;top:${top}px;height:${h}px`;
 });
 document.getElementById("gemSpriteWrap").addEventListener("pointerleave",()=>gemHlHover.style.display="none");
-gemSpriteLeft.addEventListener("pointerup",e=>{
+gemSpriteLeft.addEventListener("click",e=>{
   const rect=gemSpriteImg.getBoundingClientRect();
   openGemSetPop(gemYToLv(e.clientY-rect.top));
 });
-gemSpriteRight.addEventListener("pointerup",e=>{
+gemSpriteRight.addEventListener("click",e=>{
   const rect=gemSpriteImg.getBoundingClientRect();
   openGemCountPop(gemYToLv(e.clientY-rect.top));
 });
@@ -567,11 +567,11 @@ document.getElementById("gearSpriteWrap").addEventListener("pointermove",e=>{
 document.getElementById("gearSpriteWrap").addEventListener("pointerleave",()=>gearHlHover.style.display="none");
 
 // 装備は左右どちらもLv選択（個数は不要、1スロット=1部位）
-gearSpriteLeft.addEventListener("pointerup",e=>{
+gearSpriteLeft.addEventListener("click",e=>{
   const rect=gearSpriteImg.getBoundingClientRect();
   openGearLvPop(gearYToLv(e.clientY-rect.top));
 });
-gearSpriteRight.addEventListener("pointerup",e=>{
+gearSpriteRight.addEventListener("click",e=>{
   const rect=gearSpriteImg.getBoundingClientRect();
   openGearLvPop(gearYToLv(e.clientY-rect.top));
 });
