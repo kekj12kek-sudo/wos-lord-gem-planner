@@ -47,7 +47,7 @@ select,input{width:100%;border:1px solid #8bd8ff66;background:#071d31;color:#fff
 
 /* ===== 装備タブ ===== */
 .gearStage{position:relative;border-radius:22px;overflow:hidden;aspect-ratio:1/1;background:#0c2f4d;box-shadow:0 10px 28px #0009;border:1px solid #7bd3ff33;margin-top:10px;background-image:url('gear_bg.webp');background-size:cover;background-position:center}
-.gearHot{position:absolute;border:0;padding:0;background:radial-gradient(circle,#ffffff18,transparent 70%);transform:translate(-50%,-50%);cursor:pointer;z-index:10;width:24%;aspect-ratio:1;border-radius:50%;animation:tapPulse 2s ease-in-out infinite}
+.gearHot{position:absolute;border:0;padding:0;background:radial-gradient(circle,#ffffff18,transparent 70%);transform:translate(-50%,-50%);cursor:pointer;z-index:10;width:32%;aspect-ratio:1;border-radius:50%;animation:tapPulse 2s ease-in-out infinite}
 .gearHot:active{transform:translate(-50%,-50%) scale(0.85)!important}
 .gearHot .badge{right:-8px;top:-5px}
 /* 装備6部位の配置（背景画像に合わせて調整） */
@@ -524,7 +524,13 @@ function updateGearHighlights(){
   if(curLv>=0){const{top,h}=gearLvToRect(curLv);gearHlCur.style.cssText=`display:block;top:${top}px;height:${h}px`}else gearHlCur.style.display="none";
   if(tgtLv>=0){const{top,h}=gearLvToRect(tgtLv);gearHlTgt.style.cssText=`display:block;top:${top}px;height:${h}px`}else gearHlTgt.style.display="none";
 }
-function setGearClickH(){const h=gearSpriteImg.offsetHeight;gearSpriteLeft.style.height=h+"px";gearSpriteRight.style.height=h+"px";}
+function setGearClickH(){
+  requestAnimationFrame(()=>{
+    const h=gearSpriteImg.offsetHeight;
+    gearSpriteLeft.style.height=h+"px";
+    gearSpriteRight.style.height=h+"px";
+  });
+}
 
 function openGearModal(){
   activeGearMode="current";
