@@ -5,32 +5,29 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>宝石LvUP Planner</title>
 <style>
-:root{--bg:#061524;--line:#78d4ff55;--text:#eefaff;--muted:#add5eb}
+:root{--line:#78d4ff55;--text:#eefaff}
 *{box-sizing:border-box}
 body{margin:0;color:var(--text);font-family:system-ui,sans-serif;background:linear-gradient(180deg,#061524,#0b2b45 55%,#061524);font-weight:800}
 .app{max-width:760px;margin:0 auto;padding:14px 10px 34px}
 .header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
 .title{background:#0e3151;border:1px solid var(--line);border-radius:16px;padding:10px 14px;font-size:20px;box-shadow:0 7px 18px #0008}
 .tabs{display:flex;gap:8px}
-.tab{border:0;border-radius:999px;padding:10px 14px;color:#fff;background:#176596;font-weight:1000;box-shadow:inset 0 2px 0 #ffffff33,0 4px 10px #0008}
+.tab{border:0;border-radius:999px;padding:10px 14px;color:#fff;background:#176596;font-weight:1000;cursor:pointer}
 .tab.active{background:linear-gradient(#ffcf62,#f39d22);color:#201100}
 .card{background:#0e3151dd;border:1px solid var(--line);border-radius:20px;padding:12px;margin:10px 0;box-shadow:0 8px 20px #0008}
 .cardTitle{font-size:13px;color:#d8f1ff;margin-bottom:8px}
 .levelBox{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .field label{display:block;font-size:12px;color:#aad8ef;margin:0 0 6px 4px}
 select,input{width:100%;border:1px solid #8bd8ff66;background:#071d31;color:#fff;border-radius:12px;padding:12px;font-size:16px;font-weight:900;outline:none}
-.bulkBtn{width:100%;border:1px solid #8bd8ff66;background:#12446f;color:#fff;border-radius:14px;padding:12px;font-size:16px;font-weight:1000;box-shadow:inset 0 2px 0 #ffffff22;cursor:pointer}
+.bulkBtn{width:100%;border:1px solid #8bd8ff66;background:#12446f;color:#fff;border-radius:14px;padding:12px;font-size:16px;font-weight:1000;cursor:pointer}
 .help{font-size:12px;color:#d8f1ff;margin-top:8px}
 
 /* ステージ */
 .stage{position:relative;border-radius:22px;overflow:hidden;aspect-ratio:1403/1121;background:#0c2f4d;box-shadow:0 10px 28px #0009;border:1px solid #7bd3ff33;margin-top:10px}
 .stageImg{position:absolute;inset:0;background-image:url('gem_bg.webp');background-size:cover;background-position:center}
-.gemHot{position:absolute;width:10%;aspect-ratio:1;border:0;padding:0;background:transparent;transform:translate(-50%,-50%);cursor:pointer;z-index:10;overflow:hidden}
-/* スプライット切り出し: 画像317x2532, 16コマ → 1コマ=317x158.25 */
-/* iconWrapで overflow:hidden + 固定サイズ、imgを translateY でコマ合わせ */
-.gemIcon{position:absolute;inset:0;overflow:hidden;pointer-events:none}
-.gemIcon img{position:absolute;left:0;top:0;width:100%;/* heightはJSで設定 */pointer-events:none;filter:drop-shadow(0 3px 5px #0008)}
-.badge{position:absolute;right:-8px;top:-5px;min-width:28px;height:22px;display:grid;place-items:center;padding:0 4px;background:linear-gradient(#ff6d78,#d82337);border:2px solid #fff;border-radius:999px;color:#fff;font-size:11px;line-height:1;pointer-events:none;z-index:2}
+.gemHot{position:absolute;width:10%;aspect-ratio:1;border:0;padding:0;background:transparent;transform:translate(-50%,-50%);cursor:pointer;z-index:10}
+.gemHot img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 4px 8px #000a);pointer-events:none}
+.badge{position:absolute;right:-8px;top:-5px;min-width:28px;height:22px;display:grid;place-items:center;padding:0 4px;background:linear-gradient(#ff6d78,#d82337);border:2px solid #fff;border-radius:999px;color:#fff;font-size:11px;line-height:1;pointer-events:none}
 .gemHot[data-type="shield"]{left:50%;top:28%}
 .gemHot[data-type="lancer"]{left:35%;top:62%}
 .gemHot[data-type="marks"]{left:65%;top:62%}
@@ -48,7 +45,7 @@ select,input{width:100%;border:1px solid #8bd8ff66;background:#071d31;color:#fff
 /* モーダル */
 .modalOverlay{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;z-index:1000;padding:14px}
 .modalOverlay.show{display:flex}
-.modal{width:min(360px,100%);max-height:90vh;display:flex;flex-direction:column;background:#0e3151;border:1px solid #8bd8ff77;border-radius:18px;box-shadow:0 12px 35px #000c;overflow:hidden}
+.modal{width:min(400px,100%);max-height:90vh;display:flex;flex-direction:column;background:#0e3151;border:1px solid #8bd8ff77;border-radius:18px;box-shadow:0 12px 35px #000c;overflow:hidden}
 .modalHead{display:flex;justify-content:space-between;align-items:center;padding:12px;border-bottom:1px solid #8bd8ff33;flex-shrink:0}
 .modalTitle{font-size:17px}
 .closeBtn{border:0;background:#072035;color:#fff;border-radius:10px;padding:8px 12px;font-weight:1000;cursor:pointer}
@@ -56,26 +53,27 @@ select,input{width:100%;border:1px solid #8bd8ff66;background:#071d31;color:#fff
 .modeBtn{border:1px solid #8bd8ff66;background:#08243d;color:#fff;border-radius:12px;padding:11px;font-weight:1000;cursor:pointer}
 .modeBtn.active{background:linear-gradient(#ffcf62,#f39d22);color:#201100}
 
-/* スプライトスクロールエリア */
-.spriteWrap{flex:1;overflow-y:auto;overflow-x:hidden;padding:8px 12px 16px}
-/* 横並び: Lvラベル列 | 画像 */
-.spriteRow{display:flex;align-items:stretch}
-.lvCol{display:flex;flex-direction:column;width:36px;flex-shrink:0}
-.lvLabel{flex:1;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-size:11px;color:#aad8ef;font-weight:800;white-space:nowrap}
-.spriteInner{position:relative;flex:1;cursor:pointer;user-select:none}
-.spriteInner img{display:block;width:100%;height:auto}
-.spriteHighlight{position:absolute;left:0;right:0;pointer-events:none;border-radius:4px}
-.spriteHighlight.cur{background:#4af07a33;border:2px solid #4af07aaa}
-.spriteHighlight.tgt{background:#ff9f3333;border:2px solid #ff9f33aa}
-.spriteHover{position:absolute;left:0;right:0;pointer-events:none;border-radius:4px;background:#ffffff18;border:2px solid #ffffff55}
+/* スプライットモーダル */
+.spriteScroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:8px 16px 16px;display:flex;justify-content:center}
+.spriteWrap{position:relative;width:180px;flex-shrink:0;align-self:flex-start}
+.spriteWrap img{display:block;width:100%;height:auto;pointer-events:none}
+/* ハイライト */
+.hlBar{position:absolute;left:0;right:0;pointer-events:none;border-radius:4px}
+.hlBar.cur{background:#4af07a33;border:2px solid #4af07aaa}
+.hlBar.tgt{background:#ff9f3333;border:2px solid #ff9f33aa}
+.hlBar.hover{background:#ffffff18;border:2px solid #ffffff66}
+/* クリック領域 - 高さはJSで設定 */
+.spriteLeft{position:absolute;top:0;left:0;width:50%;z-index:2;cursor:pointer}
+.spriteRight{position:absolute;top:0;right:0;width:50%;z-index:2;cursor:pointer}
 
-/* 個数ポップ */
+/* ポップ共通 */
 .pop{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:1100;background:#0007;padding:14px}
 .pop.show{display:flex}
-.popBox{width:min(360px,100%);background:#0e3151;border:1px solid #8bd8ff77;border-radius:18px;padding:14px}
+.popBox{width:min(340px,100%);background:#0e3151;border:1px solid #8bd8ff77;border-radius:18px;padding:14px}
 .popTitle{margin-bottom:10px;font-size:15px}
 .popGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.popBtn{border:0;background:#15537f;color:#fff;border-radius:10px;padding:13px 6px;font-size:15px;font-weight:1000;cursor:pointer}
+.popGridSet{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.popBtn{border:0;background:#15537f;color:#fff;border-radius:10px;padding:13px 4px;font-size:14px;font-weight:1000;cursor:pointer}
 .popBtn.main{background:linear-gradient(#ffcf62,#f39d22);color:#201100}
 .popClose{margin-top:10px;width:100%;border:1px solid #8bd8ff66;background:#061d31;color:#fff;border-radius:10px;padding:11px;font-weight:1000;cursor:pointer}
 
@@ -94,20 +92,17 @@ select,input{width:100%;border:1px solid #8bd8ff66;background:#071d31;color:#fff
       <div class="field"><label>目標Lv</label><select id="bulkTarget"></select></div>
     </div>
     <button class="bulkBtn" id="applyAll">全宝石に一括適用</button>
-    <div class="help">宝石タップ＝個別設定 / 緑＝現在Lv / 橙＝目標Lv</div>
+    <div class="help">宝石タップ＝個別設定 / 緑ハイライト＝現在Lv / 橙ハイライト＝目標Lv</div>
   </div>
   <div class="stage">
     <div class="stageImg"></div>
     <button class="gemHot" data-type="shield" aria-label="盾宝石">
-      <div class="gemIcon"><img id="icon-shield" src="gem_green.png" alt=""></div>
       <span class="badge" id="badge-shield">0個</span>
     </button>
     <button class="gemHot" data-type="lancer" aria-label="槍宝石">
-      <div class="gemIcon"><img id="icon-lancer" src="gem_blue.png" alt=""></div>
       <span class="badge" id="badge-lancer">0個</span>
     </button>
     <button class="gemHot" data-type="marks" aria-label="弓宝石">
-      <div class="gemIcon"><img id="icon-marks" src="gem_orange.png" alt=""></div>
       <span class="badge" id="badge-marks">0個</span>
     </button>
   </div>
@@ -152,25 +147,26 @@ select,input{width:100%;border:1px solid #8bd8ff66;background:#071d31;color:#fff
       <button class="modeBtn active" data-mode="current">現在レベル</button>
       <button class="modeBtn" data-mode="target">目標レベル</button>
     </div>
-    <div class="spriteWrap">
-      <div class="spriteRow">
-        <div class="lvCol" id="lvCol"></div>
-        <div class="spriteInner" id="spriteInner">
-          <img id="spriteImg" src="" alt="">
-          <div class="spriteHighlight cur" id="hlCur" style="display:none"></div>
-          <div class="spriteHighlight tgt" id="hlTgt" style="display:none"></div>
-          <div class="spriteHover" id="hlHover" style="display:none"></div>
-        </div>
+    <div class="spriteScroll">
+      <div class="spriteWrap" id="spriteWrap">
+        <img id="spriteImg" src="" alt="">
+        <div class="hlBar cur" id="hlCur" style="display:none"></div>
+        <div class="hlBar tgt" id="hlTgt" style="display:none"></div>
+        <div class="hlBar hover" id="hlHover" style="display:none"></div>
+        <!-- 左半分タップ=set、右半分タップ=個数 -->
+        <div class="spriteLeft" id="spriteLeft"></div>
+        <div class="spriteRight" id="spriteRight"></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- 個数ポップ -->
+<!-- 個数/setポップ -->
 <div class="pop" id="pop">
   <div class="popBox">
-    <div class="popTitle" id="popTitle">個数を選択</div>
+    <div class="popTitle" id="popTitle"></div>
     <div class="popGrid" id="popGrid"></div>
+    <div class="popGridSet" id="popGridSet" style="display:none"></div>
     <button class="popClose" id="popClose">閉じる</button>
   </div>
 </div>
@@ -178,21 +174,18 @@ select,input{width:100%;border:1px solid #8bd8ff66;background:#071d31;color:#fff
 <script>
 const GEM_COSTS={0:{plan:5,book:5,secret:0},1:{plan:15,book:40,secret:0},2:{plan:40,book:60,secret:0},3:{plan:100,book:80,secret:0},4:{plan:200,book:100,secret:0},5:{plan:300,book:120,secret:0},6:{plan:400,book:140,secret:0},7:{plan:400,book:200,secret:0},8:{plan:400,book:300,secret:0},9:{plan:420,book:420,secret:0},10:{plan:420,book:560,secret:0},11:{plan:450,book:580,secret:15},12:{plan:450,book:580,secret:30},13:{plan:500,book:600,secret:45},14:{plan:500,book:600,secret:70},15:{plan:550,book:650,secret:100}};
 const GEM_INFO={shield:{name:"盾宝石",img:"gem_green.png"},lancer:{name:"槍宝石",img:"gem_blue.png"},marks:{name:"弓宝石",img:"gem_orange.png"}};
-const SPRITE_ROWS=16;
-// 画像の実寸: 317x2532 → 1コマ=158.25px高さ
-// 表示幅をWとすると表示高さ = W * 2532/317 = W * 7.986
-// 1コマ表示高さ = 表示高さ / 16
-
+const ROWS=16;
 const state={
   shield:{current:Array(17).fill(0),target:Array(17).fill(0)},
   lancer:{current:Array(17).fill(0),target:Array(17).fill(0)},
   marks:{current:Array(17).fill(0),target:Array(17).fill(0)}
 };
-let activeGem="shield", activeMode="current", pending={gem:null,mode:null,lv:null};
+let activeGem="shield",activeMode="current",pending={gem:null,mode:null,lv:null};
 
 function fmt(n){return Number(n||0).toLocaleString("ja-JP")}
 function total(a){return a.reduce((s,v)=>s+v,0)}
 function summarize(a){const p=[];for(let i=1;i<=16;i++)if(a[i])p.push(`Lv${i}×${a[i]}`);return p.length?p.join(" / "):"未設定"}
+function lvColor(lv){return lv<=2?"green":lv<=4?"blue":lv<=7?"purple":lv<=11?"orange":"red"}
 
 function fillSelects(){
   const c=document.getElementById("bulkCurrent"),t=document.getElementById("bulkTarget");
@@ -200,7 +193,6 @@ function fillSelects(){
   for(let i=1;i<=16;i++)t.add(new Option("Lv"+i,i));
   c.value=1;t.value=16;
 }
-
 function buildPairs(gem){
   const cur=[],tar=[];
   for(let lv=0;lv<=16;lv++){for(let i=0;i<state[gem].current[lv];i++)cur.push(lv);for(let i=0;i<state[gem].target[lv];i++)tar.push(lv)}
@@ -211,29 +203,11 @@ function buildPairs(gem){
 function calcOne(from,to){let plan=0,book=0,secret=0;for(let lv=from;lv<to;lv++){const r=GEM_COSTS[lv]||{};plan+=r.plan||0;book+=r.book||0;secret+=r.secret||0}return{plan,book,secret}}
 function calcAll(){const need={plan:0,book:0,secret:0};for(const gem of Object.keys(state))for(const p of buildPairs(gem)){const c=calcOne(p.from,p.to);need.plan+=c.plan;need.book+=c.book;need.secret+=c.secret}return need}
 
-// ステージアイコン: imgタグをtranslateYで動かしてコマ切り出し
-// 画像全体高さ = imgW * (2532/317), 1コマ = /16
-// コンテナ高さ = imgW * (2532/317) / 16 = imgW * 0.4991
-// translateY = -(lv-1) * コンテナ高さ
-function updateStageIcon(gem){
-  const img=document.getElementById("icon-"+gem);
-  const curLv=state[gem].current.findIndex((v,i)=>i>0&&v>0);
-  const lv=Math.max(1,curLv>0?curLv:1);
-  const containerH=img.parentElement.offsetHeight||img.parentElement.getBoundingClientRect().height;
-  // imgの表示幅から全体高さ計算
-  const imgW=img.offsetWidth||img.parentElement.offsetWidth;
-  const totalH=imgW*(2532/317);
-  const rowH=totalH/SPRITE_ROWS;
-  img.style.height=totalH+"px";
-  img.style.top=(-( lv-1)*rowH)+"px";
-}
-
 function render(){
   for(const gem of Object.keys(GEM_INFO)){
     const ct=total(state[gem].current),tt=total(state[gem].target);
     document.getElementById("badge-"+gem).textContent=ct+"個";
     document.getElementById("sum-"+gem).innerHTML=`<strong>${GEM_INFO[gem].name}</strong>現在：${summarize(state[gem].current)}<br>目標：${summarize(state[gem].target)}<br>設定：現在${ct}個 / 目標${tt}個`;
-    updateStageIcon(gem);
   }
   const need=calcAll();
   document.getElementById("needPlan").textContent=fmt(need.plan);
@@ -245,98 +219,130 @@ function render(){
   if(document.getElementById("modalOverlay").classList.contains("show"))updateHighlights();
 }
 
-// ---- モーダル ----
+// ---- モーダル スプライット ----
 const spriteImg=document.getElementById("spriteImg");
-const spriteInner=document.getElementById("spriteInner");
 const hlCur=document.getElementById("hlCur");
 const hlTgt=document.getElementById("hlTgt");
 const hlHover=document.getElementById("hlHover");
-const lvCol=document.getElementById("lvCol");
+const spriteLeft=document.getElementById("spriteLeft");
+const spriteRight=document.getElementById("spriteRight");
 
-function rowH(){return spriteImg.offsetHeight/SPRITE_ROWS}
-function lvToY(lv){const h=rowH();return{top:(lv-1)*h,h}}
-function yToLv(y){return Math.min(SPRITE_ROWS,Math.max(1,Math.ceil(y/rowH())))}
+function getRowH(){return spriteImg.offsetHeight/16}
+function yToLv(y){return Math.min(16,Math.max(1,Math.ceil(y/getRowH())))}
+function lvToRect(lv){const h=getRowH();return{top:(lv-1)*h,h}}
 
 function updateHighlights(){
   const imgH=spriteImg.offsetHeight;
   if(!imgH)return;
-  const rh=imgH/SPRITE_ROWS;
-
   const curLv=state[activeGem].current.findIndex((v,i)=>i>0&&v>0);
   const tgtLv=state[activeGem].target.findIndex((v,i)=>i>0&&v>0);
-  if(curLv>0){const {top,h}=lvToY(curLv);hlCur.style.cssText=`display:block;top:${top}px;height:${h}px`}
+  if(curLv>0){const{top,h}=lvToRect(curLv);hlCur.style.cssText=`display:block;top:${top}px;height:${h}px`}
   else hlCur.style.display="none";
-  if(tgtLv>0){const {top,h}=lvToY(tgtLv);hlTgt.style.cssText=`display:block;top:${top}px;height:${h}px`}
+  if(tgtLv>0){const{top,h}=lvToRect(tgtLv);hlTgt.style.cssText=`display:block;top:${top}px;height:${h}px`}
   else hlTgt.style.display="none";
+}
 
-  // Lvラベル生成
-  lvCol.innerHTML="";
-  for(let lv=1;lv<=SPRITE_ROWS;lv++){
-    const el=document.createElement("div");
-    el.className="lvLabel";
-    el.style.height=rh+"px";
-    el.textContent="Lv"+lv;
-    lvCol.appendChild(el);
-  }
+function setClickAreaHeight(){
+  const h=spriteImg.offsetHeight;
+  spriteLeft.style.height=h+"px";
+  spriteRight.style.height=h+"px";
 }
 
 function openGem(gem){
-  activeGem=gem;
-  activeMode="current";
+  activeGem=gem;activeMode="current";
   document.getElementById("modalTitle").textContent=GEM_INFO[gem].name+" の設定";
   document.querySelectorAll(".modeBtn").forEach(b=>b.classList.toggle("active",b.dataset.mode==="current"));
-  lvCol.innerHTML="";
-  hlCur.style.display="none";
-  hlTgt.style.display="none";
-  hlHover.style.display="none";
+  hlCur.style.display="none";hlTgt.style.display="none";hlHover.style.display="none";
   spriteImg.src=GEM_INFO[gem].img;
   document.getElementById("modalOverlay").classList.add("show");
-  if(spriteImg.complete&&spriteImg.naturalHeight){
-    updateHighlights();
-  } else {
-    spriteImg.onload=()=>updateHighlights();
-  }
+  if(spriteImg.complete&&spriteImg.naturalHeight){setClickAreaHeight();updateHighlights();}
+  else spriteImg.onload=()=>{setClickAreaHeight();updateHighlights();};
 }
 
-spriteInner.addEventListener("pointermove",e=>{
-  if(!spriteImg.offsetHeight)return;
+// ホバー
+document.getElementById("spriteWrap").addEventListener("pointermove",e=>{
   const rect=spriteImg.getBoundingClientRect();
   const y=e.clientY-rect.top;
   if(y<0||y>spriteImg.offsetHeight){hlHover.style.display="none";return}
-  const lv=yToLv(y);
-  const {top,h}=lvToY(lv);
+  const{top,h}=lvToRect(yToLv(y));
   hlHover.style.cssText=`display:block;top:${top}px;height:${h}px`;
 });
-spriteInner.addEventListener("pointerleave",()=>hlHover.style.display="none");
-spriteInner.addEventListener("pointerup",e=>{
+document.getElementById("spriteWrap").addEventListener("pointerleave",()=>hlHover.style.display="none");
+
+// 左半分タップ → set選択
+spriteLeft.addEventListener("pointerup",e=>{
   const rect=spriteImg.getBoundingClientRect();
-  const y=e.clientY-rect.top;
-  openCountPop(yToLv(y));
+  const lv=yToLv(e.clientY-rect.top);
+  openSetPop(lv);
+});
+// 右半分タップ → 個数選択
+spriteRight.addEventListener("pointerup",e=>{
+  const rect=spriteImg.getBoundingClientRect();
+  const lv=yToLv(e.clientY-rect.top);
+  openCountPop(lv);
 });
 
-function openCountPop(lv){
+function gemTotal(gem,mode){return state[gem][mode].reduce((s,v)=>s+v,0)}
+function allTotal(mode){return Object.keys(GEM_INFO).reduce((s,gem)=>s+gemTotal(gem,mode),0)}
+
+function openSetPop(lv){
   pending={gem:activeGem,mode:activeMode,lv};
-  document.getElementById("popTitle").textContent=`Lv${lv}（${activeMode==="current"?"現在":"目標"}）の個数`;
+  document.getElementById("popTitle").textContent=`Lv${lv}（${activeMode==="current"?"現在":"目標"}）一括設定`;
   const grid=document.getElementById("popGrid");
-  grid.innerHTML="";
-  for(let i=0;i<=6;i++){
+  const gridSet=document.getElementById("popGridSet");
+  grid.innerHTML="";gridSet.style.display="none";
+  const curQty=state[activeGem][activeMode][lv];
+  const usedOther=gemTotal(activeGem,activeMode)-curQty;
+  const totalUsedOther=allTotal(activeMode)-gemTotal(activeGem,activeMode);
+  const max=Math.min(6-usedOther,18-totalUsedOther-usedOther);
+  [{label:"3set",qty:3},{label:"6set",qty:6}].forEach(({label,qty})=>{
     const b=document.createElement("button");
-    b.className=i===state[activeGem][activeMode][lv]?"popBtn main":"popBtn";
-    b.textContent=i+"個";
-    b.onclick=()=>applyCount(i);
-    grid.appendChild(b);
-  }
-  ["3set","6set"].forEach(label=>{
-    const b=document.createElement("button");
-    b.className="popBtn";b.textContent=label;
-    b.onclick=()=>applyCount(label==="3set"?3:6);
+    const disabled=qty>max;
+    b.className=curQty===qty?"popBtn main":"popBtn";
+    b.style.opacity=disabled?"0.35":"1";
+    b.disabled=disabled;
+    b.textContent=label;
+    b.onclick=()=>applyPop(qty);
     grid.appendChild(b);
   });
   document.getElementById("pop").classList.add("show");
 }
 
-function applyCount(qty){
-  state[pending.gem][pending.mode]=Array(17).fill(0);
+function openCountPop(lv){
+  pending={gem:activeGem,mode:activeMode,lv};
+  document.getElementById("popTitle").textContent=`Lv${lv}（${activeMode==="current"?"現在":"目標"}）個数`;
+  const grid=document.getElementById("popGrid");
+  const gridSet=document.getElementById("popGridSet");
+  grid.innerHTML="";gridSet.innerHTML="";gridSet.style.display="grid";
+  const curQty=state[activeGem][activeMode][lv];
+  const usedOther=gemTotal(activeGem,activeMode)-curQty;
+  const totalUsedOther=allTotal(activeMode)-gemTotal(activeGem,activeMode);
+  const max=Math.min(6-usedOther,18-totalUsedOther-usedOther);
+  for(let i=0;i<=6;i++){
+    const b=document.createElement("button");
+    const disabled=i>max;
+    b.className=curQty===i?"popBtn main":"popBtn";
+    b.style.opacity=disabled?"0.35":"1";
+    b.disabled=disabled;
+    b.textContent=i+"個";
+    b.onclick=()=>applyPop(i);
+    grid.appendChild(b);
+  }
+  [{label:"3set",qty:3},{label:"6set",qty:6}].forEach(({label,qty})=>{
+    const b=document.createElement("button");
+    const disabled=qty>max;
+    b.className=curQty===qty?"popBtn main":"popBtn";
+    b.style.opacity=disabled?"0.35":"1";
+    b.disabled=disabled;
+    b.textContent=label;
+    b.onclick=()=>applyPop(qty);
+    gridSet.appendChild(b);
+  });
+  document.getElementById("pop").classList.add("show");
+}
+
+function applyPop(qty){
+  // 他のLvの設定を消さずに該当Lvだけ更新
   state[pending.gem][pending.mode][pending.lv]=qty;
   document.getElementById("pop").classList.remove("show");
   render();
@@ -355,26 +361,19 @@ function resetAll(){
   render();
 }
 
-document.querySelectorAll(".gemHot").forEach(btn=>{
-  btn.addEventListener("click",()=>openGem(btn.dataset.type));
-});
-document.querySelectorAll(".modeBtn").forEach(btn=>{
-  btn.addEventListener("click",()=>{
-    activeMode=btn.dataset.mode;
-    document.querySelectorAll(".modeBtn").forEach(b=>b.classList.toggle("active",b===btn));
-    updateHighlights();
-  });
-});
+document.querySelectorAll(".gemHot").forEach(btn=>btn.addEventListener("click",()=>openGem(btn.dataset.type)));
+document.querySelectorAll(".modeBtn").forEach(btn=>btn.addEventListener("click",()=>{
+  activeMode=btn.dataset.mode;
+  document.querySelectorAll(".modeBtn").forEach(b=>b.classList.toggle("active",b===btn));
+  updateHighlights();
+}));
 document.getElementById("closeModal").onclick=()=>document.getElementById("modalOverlay").classList.remove("show");
 document.getElementById("popClose").onclick=()=>document.getElementById("pop").classList.remove("show");
 document.getElementById("applyAll").onclick=applyAll;
 document.getElementById("resetAll").onclick=resetAll;
 ["havePlan","haveBook","haveSecret"].forEach(id=>document.getElementById(id).addEventListener("input",render));
-
 fillSelects();
 render();
-// ウィンドウリサイズ時にステージアイコン更新
-window.addEventListener("resize",()=>Object.keys(GEM_INFO).forEach(g=>updateStageIcon(g)));
 </script>
 </body>
 </html>
