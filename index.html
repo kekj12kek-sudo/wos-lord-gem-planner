@@ -71,8 +71,8 @@ select,input{width:100%;border:1px solid #8bd8ff66;background:#071d31;color:#fff
 
 /* スプライットモーダル共通 */
 .spriteScroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:8px 16px 16px;display:flex;justify-content:center}
-.spriteWrap{position:relative;width:160px;flex-shrink:0;align-self:flex-start;background:#09243b;border:1px solid #7bd3ff33;border-radius:12px;overflow:hidden}
-.spriteWrap img{display:block;width:100%;height:auto;pointer-events:none}
+.spriteWrap{position:relative;width:160px;flex-shrink:0;align-self:flex-start;background:#09243b;border:1px solid #7bd3ff33;border-radius:12px;cursor:pointer}
+.spriteWrap img{display:block;width:100%;height:auto;pointer-events:none;border-radius:12px}
 .hlBar{position:absolute;left:0;right:0;pointer-events:none;border-radius:4px}
 .hlBar.cur{background:#4af07a33;border:2px solid #4af07aaa}
 .hlBar.tgt{background:#ff9f3333;border:2px solid #ff9f33aa}
@@ -236,8 +236,6 @@ select,input{width:100%;border:1px solid #8bd8ff66;background:#071d31;color:#fff
         <div class="hlBar cur" id="gearHlCur" style="display:none"></div>
         <div class="hlBar tgt" id="gearHlTgt" style="display:none"></div>
         <div class="hlBar hover" id="gearHlHover" style="display:none"></div>
-        <div class="spriteLeft" id="gearSpriteLeft"></div>
-        <div class="spriteRight" id="gearSpriteRight"></div>
       </div>
     </div>
   </div>
@@ -521,8 +519,7 @@ const gearSpriteImg=document.getElementById("gearSpriteImg");
 const gearHlCur=document.getElementById("gearHlCur");
 const gearHlTgt=document.getElementById("gearHlTgt");
 const gearHlHover=document.getElementById("gearHlHover");
-const gearSpriteLeft=document.getElementById("gearSpriteLeft");
-const gearSpriteRight=document.getElementById("gearSpriteRight");
+const gearSpriteWrap=document.getElementById("gearSpriteWrap");
 
 function gearRowH(){return gearSpriteImg.offsetHeight/GEAR_ROWS}
 function gearYToLv(y){return Math.min(GEAR_ROWS-1,Math.max(0,Math.floor(y/gearRowH())))}
@@ -535,45 +532,30 @@ function updateGearHighlights(){
   if(curLv>=0){const{top,h}=gearLvToRect(curLv);gearHlCur.style.cssText=`display:block;top:${top}px;height:${h}px`}else gearHlCur.style.display="none";
   if(tgtLv>=0){const{top,h}=gearLvToRect(tgtLv);gearHlTgt.style.cssText=`display:block;top:${top}px;height:${h}px`}else gearHlTgt.style.display="none";
 }
-function setGearClickH(){
-  const trySet=()=>{
-    const h=gearSpriteImg.offsetHeight;
-    if(h>0){
-      gearSpriteLeft.style.height=h+"px";
-      gearSpriteRight.style.height=h+"px";
-    } else {
-      requestAnimationFrame(trySet);
-    }
-  };
-  requestAnimationFrame(trySet);
-}
+function setGearClickH(){} // spriteWrap方式では不要
 
 function openGearModal(){
   activeGearMode="current";
-  document.getElementById("gearModalTitle").textContent="装備の設定";
+  document.getElementById("gearModalTitle").textContent="装備の設定【現在レベル】";
   document.querySelectorAll(".gearModeBtn").forEach(b=>b.classList.toggle("active",b.dataset.mode==="current"));
   gearHlCur.style.display="none";gearHlTgt.style.display="none";gearHlHover.style.display="none";
   document.getElementById("gearModal").classList.add("show");
-  if(gearSpriteImg.complete&&gearSpriteImg.naturalHeight){setGearClickH();updateGearHighlights();}
-  else gearSpriteImg.onload=()=>{setGearClickH();updateGearHighlights();};
+  if(gearSpriteImg.complete&&gearSpriteImg.naturalHeight)updateGearHighlights();
+  else gearSpriteImg.onload=()=>updateGearHighlights();
 }
 
-document.getElementById("gearSpriteWrap").addEventListener("pointermove",e=>{
+gearSpriteWrap.addEventListener("pointermove",e=>{
   const rect=gearSpriteImg.getBoundingClientRect();const y=e.clientY-rect.top;
   if(y<0||y>gearSpriteImg.offsetHeight){gearHlHover.style.display="none";return}
   const{top,h}=gearLvToRect(gearYToLv(y));
   gearHlHover.style.cssText=`display:block;top:${top}px;height:${h}px`;
 });
-document.getElementById("gearSpriteWrap").addEventListener("pointerleave",()=>gearHlHover.style.display="none");
-
-// 装備は左右どちらもLv選択（個数は不要、1スロット=1部位）
-gearSpriteLeft.addEventListener("click",e=>{
+gearSpriteWrap.addEventListener("pointerleave",()=>gearHlHover.style.display="none");
+gearSpriteWrap.addEventListener("click",e=>{
   const rect=gearSpriteImg.getBoundingClientRect();
-  openGearLvPop(gearYToLv(e.clientY-rect.top));
-});
-gearSpriteRight.addEventListener("click",e=>{
-  const rect=gearSpriteImg.getBoundingClientRect();
-  openGearLvPop(gearYToLv(e.clientY-rect.top));
+  const y=e.clientY-rect.top;
+  const lv=gearYToLv(y);
+  openGearLvPop(lv);
 });
 
 document.querySelectorAll(".gearModeBtn").forEach(btn=>btn.addEventListener("click",()=>{
