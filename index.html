@@ -32,20 +32,23 @@ select,input{width:100%;border:1px solid #8bd8ff66;background:#071d31;color:#fff
 .tabContent{display:none}.tabContent.active{display:block}
 
 /* ===== 宝石タブ ===== */
-.stage{position:relative;border-radius:22px;overflow:hidden;aspect-ratio:1403/1121;background:#0c2f4d;box-shadow:0 10px 28px #0009;border:1px solid #7bd3ff33;margin-top:10px}
+.stage{position:relative;border-radius:22px;overflow:hidden;aspect-ratio:1/1;background:#0c2f4d;box-shadow:0 10px 28px #0009;border:1px solid #7bd3ff33;margin-top:10px}
 .stageImg{position:absolute;inset:0;background-image:url('gem_bg.webp');background-size:cover;background-position:center}
-.gemHot{position:absolute;width:10%;aspect-ratio:1;border:0;padding:0;background:transparent;transform:translate(-50%,-50%);cursor:pointer;z-index:10}
+.gemHot{position:absolute;width:14%;aspect-ratio:1;border:0;padding:0;background:radial-gradient(circle,#ffffff18,transparent 70%);transform:translate(-50%,-50%);cursor:pointer;z-index:10;border-radius:50%;animation:tapPulse 2s ease-in-out infinite}
+.gemHot:active{transform:translate(-50%,-50%) scale(0.85)!important}
 .badge{position:absolute;right:-8px;top:-5px;min-width:28px;height:22px;display:grid;place-items:center;padding:0 4px;background:linear-gradient(#ff6d78,#d82337);border:2px solid #fff;border-radius:999px;color:#fff;font-size:11px;line-height:1;pointer-events:none}
-.gemHot[data-type="shield"]{left:50%;top:28%}
-.gemHot[data-type="lancer"]{left:35%;top:62%}
-.gemHot[data-type="marks"]{left:65%;top:62%}
+.gemHot[data-type="shield"]{left:50%;top:25%}
+.gemHot[data-type="lancer"]{left:33%;top:62%}
+.gemHot[data-type="marks"]{left:67%;top:62%}
+@keyframes tapPulse{0%,100%{box-shadow:0 0 0 0 #ffffff44}60%{box-shadow:0 0 0 12px #ffffff00}}
 .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
 .gemSummary{background:#09243b;border:1px solid #7bd3ff44;border-radius:16px;padding:10px;text-align:center;font-size:13px}
 .gemSummary strong{display:block;font-size:15px;color:#fff}
 
 /* ===== 装備タブ ===== */
-.gearStage{position:relative;border-radius:22px;overflow:hidden;aspect-ratio:1403/1121;background:#0c2f4d;box-shadow:0 10px 28px #0009;border:1px solid #7bd3ff33;margin-top:10px;background-image:url('gear_bg.webp');background-size:cover;background-position:center}
-.gearHot{position:absolute;border:0;padding:0;background:transparent;transform:translate(-50%,-50%);cursor:pointer;z-index:10;width:18%;aspect-ratio:1}
+.gearStage{position:relative;border-radius:22px;overflow:hidden;aspect-ratio:1/1;background:#0c2f4d;box-shadow:0 10px 28px #0009;border:1px solid #7bd3ff33;margin-top:10px;background-image:url('gear_bg.webp');background-size:cover;background-position:center}
+.gearHot{position:absolute;border:0;padding:0;background:radial-gradient(circle,#ffffff18,transparent 70%);transform:translate(-50%,-50%);cursor:pointer;z-index:10;width:24%;aspect-ratio:1;border-radius:50%;animation:tapPulse 2s ease-in-out infinite}
+.gearHot:active{transform:translate(-50%,-50%) scale(0.85)!important}
 .gearHot .badge{right:-8px;top:-5px}
 /* 装備6部位の配置（背景画像に合わせて調整） */
 .gearHot[data-slot="0"]{left:50%;top:48%}
@@ -152,9 +155,9 @@ select,input{width:100%;border:1px solid #8bd8ff66;background:#071d31;color:#fff
     <div class="card">
       <div class="help">スロット一覧をタップして現在/目標レベルを設定</div>
     </div>
-    <!-- 装備ステージ: 背景画像 + 中央タップ -->
+    <!-- 装備ステージ: 背景画像 + 中央タップのみ -->
     <div class="gearStage" id="gearStage">
-      <button class="gearHot" style="left:50%;top:48%;pointer-events:none;opacity:0"></button>
+      <button class="gearHot" id="gearCenterBtn" style="left:50%;top:52%"></button>
     </div>
     <!-- スロット一覧 -->
     <div class="gearSlots" id="gearSlots"></div>
@@ -469,6 +472,10 @@ function gearCalcAll(){
 
 function renderGear(){
   renderGearSlots();
+  // 中央ボタンのバッジ更新
+  const btn=document.getElementById("gearCenterBtn");
+  const ct=gearTotal("current"),tt=gearTotal("target");
+  btn.innerHTML=`<span class="badge">${ct}/${tt}</span>`;
   const need=gearCalcAll();
   document.getElementById("needAlloy").textContent=fmt(need.alloy);
   document.getElementById("needPolish").textContent=fmt(need.polish);
@@ -533,6 +540,7 @@ gearSpriteRight.addEventListener("pointerup",e=>{
 document.querySelectorAll(".gearModeBtn").forEach(btn=>btn.addEventListener("click",()=>{
   activeGearMode=btn.dataset.mode;
   document.querySelectorAll(".gearModeBtn").forEach(b=>b.classList.toggle("active",b===btn));
+  document.getElementById("gearModalTitle").textContent=`装備の設定【${activeGearMode==="current"?"現在レベル":"目標レベル"}】`;
   updateGearHighlights();
 }));
 document.getElementById("closeGearModal").onclick=()=>document.getElementById("gearModal").classList.remove("show");
@@ -581,7 +589,7 @@ function applyAll(){
 }
 
 document.querySelectorAll(".gemHot").forEach(btn=>btn.addEventListener("click",()=>openGem(btn.dataset.type)));
-document.getElementById("gearStage").addEventListener("click",openGearModal);
+document.getElementById("gearCenterBtn").addEventListener("click",openGearModal);
 // スロットクリック
 document.getElementById("resetGem").onclick=()=>{for(const gem of Object.keys(gemState)){gemState[gem].current=Array(17).fill(0);gemState[gem].target=Array(17).fill(0)}renderGem()};
 document.getElementById("resetGear").onclick=()=>{gearState.current=Array(21).fill(0);gearState.target=Array(21).fill(0);renderGear()};
