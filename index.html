@@ -53,18 +53,18 @@ select,input{width:100%;border:1px solid #8bd8ff66;background:#071d31;color:#fff
 .modeBtn{border:1px solid #8bd8ff66;background:#08243d;color:#fff;border-radius:12px;padding:11px;font-weight:1000;cursor:pointer}
 .modeBtn.active{background:linear-gradient(#ffcf62,#f39d22);color:#201100}
 
-/* Lvリスト */
-.lvList{overflow-y:auto;padding:8px 12px 16px;display:flex;flex-direction:column;gap:6px}
-.lvRow{display:grid;grid-template-columns:80px 1fr;gap:8px;align-items:center}
-.lvRowBtn{border:0;border-radius:10px;padding:14px 8px;font-size:15px;font-weight:1000;color:#fff;cursor:pointer;text-align:center}
-.lvRowBtn.green{background:linear-gradient(#65d755,#2ba937)}
-.lvRowBtn.blue{background:linear-gradient(#75c9ff,#2d88cf)}
-.lvRowBtn.purple{background:linear-gradient(#b784ff,#7645c6)}
-.lvRowBtn.orange{background:linear-gradient(#ffc15a,#e7841e)}
-.lvRowBtn.red{background:linear-gradient(#ff7777,#d73342)}
-.lvCount{background:#09243b;border:1px solid #7bd3ff44;border-radius:10px;padding:14px 8px;text-align:center;font-size:15px;color:#fff;cursor:pointer}
-.lvCount.set{border-color:#4af07a88;color:#4af07a}
-.lvCount.tgt{border-color:#ff9f3388;color:#ff9f33}
+/* スプライットモーダル */
+.spriteScroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:8px 16px 16px;display:flex;justify-content:center}
+.spriteWrap{position:relative;width:180px;cursor:pointer;user-select:none;flex-shrink:0}
+.spriteWrap img{display:block;width:100%;height:auto;pointer-events:none}
+/* 左半分=set、右半分=個数 の透明クリック領域 */
+.spriteLeft{position:absolute;top:0;left:0;width:50%;height:100%}
+.spriteRight{position:absolute;top:0;right:0;width:50%;height:100%}
+/* ハイライト */
+.hlBar{position:absolute;left:0;right:0;pointer-events:none;border-radius:4px}
+.hlBar.cur{background:#4af07a33;border:2px solid #4af07aaa}
+.hlBar.tgt{background:#ff9f3333;border:2px solid #ff9f33aa}
+.hlBar.hover{background:#ffffff18;border:2px solid #ffffff66}
 
 /* ポップ共通 */
 .pop{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:1100;background:#0007;padding:14px}
@@ -146,7 +146,17 @@ select,input{width:100%;border:1px solid #8bd8ff66;background:#071d31;color:#fff
       <button class="modeBtn active" data-mode="current">現在レベル</button>
       <button class="modeBtn" data-mode="target">目標レベル</button>
     </div>
-    <div class="lvList" id="lvList"></div>
+    <div class="spriteScroll">
+      <div class="spriteWrap" id="spriteWrap">
+        <img id="spriteImg" src="" alt="">
+        <div class="hlBar cur" id="hlCur" style="display:none"></div>
+        <div class="hlBar tgt" id="hlTgt" style="display:none"></div>
+        <div class="hlBar hover" id="hlHover" style="display:none"></div>
+        <!-- 左半分タップ=set、右半分タップ=個数 -->
+        <div class="spriteLeft" id="spriteLeft"></div>
+        <div class="spriteRight" id="spriteRight"></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -204,48 +214,84 @@ function render(){
   document.getElementById("lackPlan").textContent=fmt(Math.max(0,need.plan-Number(document.getElementById("havePlan").value||0)));
   document.getElementById("lackBook").textContent=fmt(Math.max(0,need.book-Number(document.getElementById("haveBook").value||0)));
   document.getElementById("lackSecret").textContent=fmt(Math.max(0,need.secret-Number(document.getElementById("haveSecret").value||0)));
-  if(document.getElementById("modalOverlay").classList.contains("show"))renderLvList();
+  if(document.getElementById("modalOverlay").classList.contains("show"))updateHighlights();
 }
 
-// ---- モーダル ----
+// ---- モーダル スプライット ----
+const spriteImg=document.getElementById("spriteImg");
+const hlCur=document.getElementById("hlCur");
+const hlTgt=document.getElementById("hlTgt");
+const hlHover=document.getElementById("hlHover");
+const spriteLeft=document.getElementById("spriteLeft");
+const spriteRight=document.getElementById("spriteRight");
 
-function lvColor(lv){return lv<=2?"green":lv<=4?"blue":lv<=7?"purple":lv<=11?"orange":"red"}
+function getRowH(){return spriteImg.offsetHeight/16}
+function yToLv(y){return Math.min(16,Math.max(1,Math.ceil(y/getRowH())))}
+function lvToRect(lv){const h=getRowH();return{top:(lv-1)*h,h}}
 
-function renderLvList(){
-  const list=document.getElementById("lvList");
-  list.innerHTML="";
-  for(let lv=1;lv<=16;lv++){
-    const curQty=state[activeGem].current[lv];
-    const tgtQty=state[activeGem].target[lv];
-    const row=document.createElement("div");
-    row.className="lvRow";
-    // Lvボタン
-    const lb=document.createElement("button");
-    lb.className="lvRowBtn "+lvColor(lv);
-    lb.textContent="Lv."+lv;
-    lb.onclick=(()=>{const l=lv;return()=>openCountPop(l)})();
-    // 個数表示
-    const cnt=document.createElement("div");
-    cnt.className="lvCount"+(activeMode==="current"&&curQty>0?" set":activeMode==="target"&&tgtQty>0?" tgt":"");
-    const qty=activeMode==="current"?curQty:tgtQty;
-    cnt.textContent=qty>0?qty+"個":"－";
-    cnt.onclick=(()=>{const l=lv;return()=>openCountPop(l)})();
-    row.append(lb,cnt);
-    list.appendChild(row);
-  }
+function updateHighlights(){
+  const imgH=spriteImg.offsetHeight;
+  if(!imgH)return;
+  const curLv=state[activeGem].current.findIndex((v,i)=>i>0&&v>0);
+  const tgtLv=state[activeGem].target.findIndex((v,i)=>i>0&&v>0);
+  if(curLv>0){const{top,h}=lvToRect(curLv);hlCur.style.cssText=`display:block;top:${top}px;height:${h}px`}
+  else hlCur.style.display="none";
+  if(tgtLv>0){const{top,h}=lvToRect(tgtLv);hlTgt.style.cssText=`display:block;top:${top}px;height:${h}px`}
+  else hlTgt.style.display="none";
 }
 
 function openGem(gem){
   activeGem=gem;activeMode="current";
   document.getElementById("modalTitle").textContent=GEM_INFO[gem].name+" の設定";
   document.querySelectorAll(".modeBtn").forEach(b=>b.classList.toggle("active",b.dataset.mode==="current"));
+  hlCur.style.display="none";hlTgt.style.display="none";hlHover.style.display="none";
+  spriteImg.src=GEM_INFO[gem].img;
   document.getElementById("modalOverlay").classList.add("show");
-  renderLvList();
+  if(spriteImg.complete&&spriteImg.naturalHeight)updateHighlights();
+  else spriteImg.onload=()=>updateHighlights();
+}
+
+// ホバー
+document.getElementById("spriteWrap").addEventListener("pointermove",e=>{
+  const rect=spriteImg.getBoundingClientRect();
+  const y=e.clientY-rect.top;
+  if(y<0||y>spriteImg.offsetHeight){hlHover.style.display="none";return}
+  const{top,h}=lvToRect(yToLv(y));
+  hlHover.style.cssText=`display:block;top:${top}px;height:${h}px`;
+});
+document.getElementById("spriteWrap").addEventListener("pointerleave",()=>hlHover.style.display="none");
+
+// 左半分タップ → set選択
+spriteLeft.addEventListener("pointerup",e=>{
+  const rect=spriteImg.getBoundingClientRect();
+  const lv=yToLv(e.clientY-rect.top);
+  openSetPop(lv);
+});
+// 右半分タップ → 個数選択
+spriteRight.addEventListener("pointerup",e=>{
+  const rect=spriteImg.getBoundingClientRect();
+  const lv=yToLv(e.clientY-rect.top);
+  openCountPop(lv);
+});
+
+function openSetPop(lv){
+  pending={gem:activeGem,mode:activeMode,lv};
+  document.getElementById("popTitle").textContent=`Lv${lv}（${activeMode==="current"?"現在":"目標"}）一括設定`;
+  const grid=document.getElementById("popGrid");
+  grid.innerHTML="";
+  [{label:"3set",qty:3},{label:"6set",qty:6}].forEach(({label,qty})=>{
+    const b=document.createElement("button");
+    b.className=state[activeGem][activeMode][lv]===qty?"popBtn main":"popBtn";
+    b.textContent=label;
+    b.onclick=()=>applyPop(qty);
+    grid.appendChild(b);
+  });
+  document.getElementById("pop").classList.add("show");
 }
 
 function openCountPop(lv){
   pending={gem:activeGem,mode:activeMode,lv};
-  document.getElementById("popTitle").textContent=`Lv${lv}（${activeMode==="current"?"現在":"目標"}）`;
+  document.getElementById("popTitle").textContent=`Lv${lv}（${activeMode==="current"?"現在":"目標"}）個数`;
   const grid=document.getElementById("popGrid");
   grid.innerHTML="";
   for(let i=0;i<=6;i++){
@@ -255,13 +301,6 @@ function openCountPop(lv){
     b.onclick=()=>applyPop(i);
     grid.appendChild(b);
   }
-  [{label:"3set",qty:3},{label:"6set",qty:6}].forEach(({label,qty})=>{
-    const b=document.createElement("button");
-    b.className=state[activeGem][activeMode][lv]===qty?"popBtn main":"popBtn";
-    b.textContent=label;
-    b.onclick=()=>applyPop(qty);
-    grid.appendChild(b);
-  });
   document.getElementById("pop").classList.add("show");
 }
 
@@ -289,7 +328,7 @@ document.querySelectorAll(".gemHot").forEach(btn=>btn.addEventListener("click",(
 document.querySelectorAll(".modeBtn").forEach(btn=>btn.addEventListener("click",()=>{
   activeMode=btn.dataset.mode;
   document.querySelectorAll(".modeBtn").forEach(b=>b.classList.toggle("active",b===btn));
-  renderLvList();
+  updateHighlights();
 }));
 document.getElementById("closeModal").onclick=()=>document.getElementById("modalOverlay").classList.remove("show");
 document.getElementById("popClose").onclick=()=>document.getElementById("pop").classList.remove("show");
