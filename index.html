@@ -55,16 +55,16 @@ select,input{width:100%;border:1px solid #8bd8ff66;background:#071d31;color:#fff
 
 /* スプライットモーダル */
 .spriteScroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:8px 16px 16px;display:flex;justify-content:center}
-.spriteWrap{position:relative;width:180px;cursor:pointer;user-select:none;flex-shrink:0}
+.spriteWrap{position:relative;width:180px;flex-shrink:0;align-self:flex-start}
 .spriteWrap img{display:block;width:100%;height:auto;pointer-events:none}
-/* 左半分=set、右半分=個数 の透明クリック領域 */
-.spriteLeft{position:absolute;top:0;left:0;width:50%;height:100%}
-.spriteRight{position:absolute;top:0;right:0;width:50%;height:100%}
 /* ハイライト */
 .hlBar{position:absolute;left:0;right:0;pointer-events:none;border-radius:4px}
 .hlBar.cur{background:#4af07a33;border:2px solid #4af07aaa}
 .hlBar.tgt{background:#ff9f3333;border:2px solid #ff9f33aa}
 .hlBar.hover{background:#ffffff18;border:2px solid #ffffff66}
+/* クリック領域 - 高さはJSで設定 */
+.spriteLeft{position:absolute;top:0;left:0;width:50%;z-index:2;cursor:pointer}
+.spriteRight{position:absolute;top:0;right:0;width:50%;z-index:2;cursor:pointer}
 
 /* ポップ共通 */
 .pop{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:1100;background:#0007;padding:14px}
@@ -240,6 +240,12 @@ function updateHighlights(){
   else hlTgt.style.display="none";
 }
 
+function setClickAreaHeight(){
+  const h=spriteImg.offsetHeight;
+  spriteLeft.style.height=h+"px";
+  spriteRight.style.height=h+"px";
+}
+
 function openGem(gem){
   activeGem=gem;activeMode="current";
   document.getElementById("modalTitle").textContent=GEM_INFO[gem].name+" の設定";
@@ -247,8 +253,8 @@ function openGem(gem){
   hlCur.style.display="none";hlTgt.style.display="none";hlHover.style.display="none";
   spriteImg.src=GEM_INFO[gem].img;
   document.getElementById("modalOverlay").classList.add("show");
-  if(spriteImg.complete&&spriteImg.naturalHeight)updateHighlights();
-  else spriteImg.onload=()=>updateHighlights();
+  if(spriteImg.complete&&spriteImg.naturalHeight){setClickAreaHeight();updateHighlights();}
+  else spriteImg.onload=()=>{setClickAreaHeight();updateHighlights();};
 }
 
 // ホバー
